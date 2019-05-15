@@ -1,7 +1,9 @@
 package com.wangyuelin.uiwidgetmodule;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -69,6 +71,7 @@ public class EasyScrollView extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDragHelper.processTouchEvent(event);
+        CoordinatorLayout coordinatorLayout;
         return true;
     }
 
@@ -100,7 +103,7 @@ public class EasyScrollView extends RelativeLayout {
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
 
             if (mScrollMode == ScrollMode.V_MODE) {
-                left -= dx;
+                left -= dx;//不动
             } else if (mScrollMode == ScrollMode.H_MODE || mScrollMode == ScrollMode.ALL_MODE) {
                 int childW = child.getWidth();
                 int parentW = getWidth();
@@ -328,6 +331,8 @@ public class EasyScrollView extends RelativeLayout {
      * @param mDragViews
      */
     public void setDragViews(List<View> mDragViews) {
+        ValueAnimator animator = ValueAnimator.ofInt(100);
+        animator.start();
         this.mDragViews = mDragViews;
     }
 
