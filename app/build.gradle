@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-aspectjx'
 
 android {
     compileSdkVersion 28
@@ -16,6 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    aspectjx {
+        //开关AspectJX功能
+        enabled true
+    }
 }
 
 dependencies {
@@ -25,7 +31,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'org.aspectj:aspectjrt:1.8.+'
     implementation project(':utilmodule')
     implementation project(':uiwidgetmodule')
     implementation project(':common')
+    implementation project(':performance')
 }
