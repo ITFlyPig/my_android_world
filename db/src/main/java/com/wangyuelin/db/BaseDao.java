@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Pair;
 
+import com.wangyuelin.myandroidworld.util.LogUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;

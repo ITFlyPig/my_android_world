@@ -1,7 +1,6 @@
 package com.wangyuelin.db.demo;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import com.wangyuelin.common.BaseApplication;

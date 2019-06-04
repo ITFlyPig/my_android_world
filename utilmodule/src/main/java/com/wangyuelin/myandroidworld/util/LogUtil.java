@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wangyuelin.db;
+package com.wangyuelin.myandroidworld.util;
 
 import android.util.Log;
+
+import com.wangyuelin.myandroidworld.BuildConfig;
 
 /**
  *
