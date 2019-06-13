@@ -1,5 +1,7 @@
 package myandroidworld.wangyuelin.com.myandroidworld;
 
+import com.alibaba.fastjson.JSON;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +15,14 @@ public class MethodTime {
 
     private CallHelper.CallListener callListener = new CallHelper.CallListener() {
         @Override
-        public void onCallDone(CallBean callBean) {
+        public void onCallDone(final CallBean callBean) {
+            ThreadHelper.getInstance().submit(new Runnable() {
+                @Override
+                public void run() {
+                    String callJson = JSON.toJSONString(callBean);
+                    WebSocketHelper.getInstance().send(callJson);
+                }
+            });
 
         }
     };
