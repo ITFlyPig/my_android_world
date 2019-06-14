@@ -45,7 +45,8 @@ public class PerformanceView extends View {
     private void init() {
         methodH = ConvertUtils.dp2px(30);
         colors = new int[]{Color.parseColor("#ADD8E6"), Color.parseColor("#00BFFF"), Color.parseColor("#87CEEB"),
-                Color.parseColor("#87CEFA"), Color.parseColor("#4682B4")};
+                Color.parseColor("#87CEFA"), Color.parseColor("#4682B4"), Color.parseColor("#4B0082"), Color.parseColor("#20B2AA"),
+                Color.parseColor("#228B22"), Color.parseColor("#EEE8AA"), Color.parseColor("#FFDEAD"), Color.parseColor("#FF4500")};
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
@@ -85,7 +86,7 @@ public class PerformanceView extends View {
                 MethodQueue.methods.remove(next);//超出屏幕的边界，直接删除
             }
             layout(next, nextY, nextX);
-            nextY += (next.h + 10);//得加上代码片段之间的间隔
+            nextY += (next.h + ConvertUtils.dp2px(5));//得加上代码片段之间的间隔
         }
         //绘制
         for (CallDrawItem method : MethodQueue.methods) {
@@ -142,7 +143,7 @@ public class PerformanceView extends View {
         int totalH = 0;
         for (CallDrawItem callDrawItem : item.childs) {
             caculate(callDrawItem);
-            totalH += callDrawItem.h;
+            totalH += (callDrawItem.h + ConvertUtils.dp2px(3));
         }
         item.h = totalH;
 

@@ -19,6 +19,9 @@ public class MethodQueue {
         methods = Collections.synchronizedList(new LinkedList<CallDrawItem>());
 
         makeTest();
+
+        makeTest();
+
     }
 
     public static void makeTest() {
