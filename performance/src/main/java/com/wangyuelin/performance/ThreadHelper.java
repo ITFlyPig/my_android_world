@@ -1,4 +1,4 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.performance;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 public class ThreadHelper {
 
     private static class Holder {
-        private static ThreadHelper threadHelper;
+        private static ThreadHelper threadHelper = new ThreadHelper();
     }
 
     public static ThreadHelper getInstance() {

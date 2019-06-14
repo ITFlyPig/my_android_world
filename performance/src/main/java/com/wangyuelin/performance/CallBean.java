@@ -1,4 +1,4 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.performance;
 
 import android.text.TextUtils;
 
@@ -14,7 +14,7 @@ public class CallBean {
     public long endTIme;//结束时的事件
     public String classC;//所属的Class
     public Object[] args;//方法的参数
-    public List<List<CallBean>> childs;//被调用的子方法
+    public List<CallBean> childs;//被调用的子方法
     public CallBean parent;//父调用
 
     public CallBean(String signature, long totalTime, long startTime, long endTIme, String classC, Object[] args) {
@@ -29,24 +29,22 @@ public class CallBean {
     @Override
     public String toString() {
         String res = "方法：" + signature + "|| 耗时：" + totalTime + " ms" +
-                "" ;
+                "";
         String chidStr = "";
         if (childs != null) {
             int count = 0;
-            for (List<CallBean> childs : childs) {
-                String temp = "";
-                for (CallBean child : childs) {
-                    if (TextUtils.isEmpty(temp)) {
-                        temp += "[";
-                    }
-                    temp += child.toString() + ";";
+            String temp = "";
+            for (CallBean child : childs) {
+                if (TextUtils.isEmpty(temp)) {
+                    temp += "[";
                 }
-                if (!TextUtils.isEmpty(temp)) {
-                    temp += "]";
-                }
-
-                chidStr += " 孩子 " + count + " = " + temp + ";";
+                temp += child.toString() + ";";
             }
+            if (!TextUtils.isEmpty(temp)) {
+                temp += "]";
+            }
+
+            chidStr += " 孩子 " + count + " = " + temp + ";";
         }
         return res + chidStr;
     }

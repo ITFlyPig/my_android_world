@@ -1,4 +1,4 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.performance;
 
 import android.text.TextUtils;
 
@@ -42,10 +42,8 @@ public class CallHelper {
             if (parentCall.childs == null) {
                 parentCall.childs = new ArrayList<>();
             }
-            if (parentCall.childs.size() == 0) {
-                parentCall.childs.add(new ArrayList<CallBean>());
-            }
-            parentCall.childs.get(parentCall.childs.size() - 1).add(newCall);
+
+            parentCall.childs.add(newCall);
             newCall.parent = parentCall;
         }
         stack.push(newCall);

@@ -1,4 +1,6 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.performance;
+
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
@@ -20,7 +22,8 @@ public class MethodTime {
                 @Override
                 public void run() {
                     String callJson = JSON.toJSONString(callBean);
-                    WebSocketHelper.getInstance().send(callJson);
+//                    WebSocketHelper.getInstance().send(callJson);
+                    Log.d("wyl", "反馈的Josn" + callJson);
                 }
             });
 

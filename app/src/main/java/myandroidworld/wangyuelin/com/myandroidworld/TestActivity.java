@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.wangyuelin.performance.show.CallDrawItem;
+
+import java.util.ArrayList;
+
 public class TestActivity extends AppCompatActivity {
 
     @Override
@@ -30,4 +34,6 @@ public class TestActivity extends AppCompatActivity {
     private void method4(){
         System.out.println("method1");
     }
+
+
 }
