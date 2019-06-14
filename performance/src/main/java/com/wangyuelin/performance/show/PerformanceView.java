@@ -55,14 +55,26 @@ public class PerformanceView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        //获得最大的宽度
         for (CallDrawItem method : MethodQueue.methods) {
-            caculate(method);
-            if (method.w > maxW) {
-                maxW = method.w;
-                requestLayout();
-                return;
+            int w = getW(method);
+            if (w > maxW) {
+                maxW = w;
             }
         }
+        //计算缩放的比例
+        if (maxW > 0) {
+            scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(50))/ (float)maxW;
+        }
+
+        LogUtil.d("计算的缩放比例：" + scaleW + " 屏幕的宽度：" + ScreenUtils.getScreenWidth() + " 最大的宽度：" + maxW);
+
+
+        //计算尺寸
+        for (CallDrawItem method : MethodQueue.methods) {
+            caculate(method);
+        }
+
         int nextX = 0;
         int nextY = 0;
 
@@ -221,9 +233,18 @@ public class PerformanceView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (maxW > 0 && maxW > ScreenUtils.getScreenWidth()) {
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxW, MeasureSpec.EXACTLY);
-        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * 获取宽度
+     * @param item
+     * @return
+     */
+    public int getW(CallDrawItem item) {
+        if (item == null) {
+            return 0;
+        }
+        return  (int) item.totalTime;
     }
 }

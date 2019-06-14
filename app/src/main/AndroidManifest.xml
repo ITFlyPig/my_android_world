@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.wangyuelin.app.TestActivity"/>
+        <activity android:name="com.wangyuelin.app.TestActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>
