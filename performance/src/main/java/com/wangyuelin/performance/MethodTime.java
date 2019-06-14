@@ -32,13 +32,13 @@ public class MethodTime {
     private CallHelper callHelper = new CallHelper(callListener);
 
     //////////////////////////////////统计方法的执行时间///////////////////////////////////////
-    @Before("execution(* com.wangyuelin.uiwidgetmodule.**.*(..))")
+    @Before("execution(* com.wangyuelin.app.**.*(..))")
     public void preMethod(JoinPoint joinPoint) {
         String signature = joinPoint.getSignature().toString();
         callHelper.recordStart(signature, joinPoint.getArgs());
     }
 
-    @After("execution(* com.wangyuelin.uiwidgetmodule.**.*(..))")
+    @After("execution(* com.wangyuelin.app.**.*(..))")
     public void afterMethod(JoinPoint joinPoint) {
         String signature = joinPoint.getSignature().toString();
         callHelper.recordEnd(signature);

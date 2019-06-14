@@ -1,4 +1,4 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.app;
 
 import com.wangyuelin.common.BaseApplication;
 import com.wangyuelin.performance.ThreadHelper;

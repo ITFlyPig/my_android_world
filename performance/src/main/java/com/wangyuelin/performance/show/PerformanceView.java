@@ -26,6 +26,7 @@ public class PerformanceView extends View {
     private int[] colors;//柱子的颜色池
     private int methodH;//方法对应柱子的最小高度
     private float scaleW;//横向缩放比例
+    private int maxW;//最大的宽度
 
 
     public PerformanceView(Context context) {
@@ -47,8 +48,8 @@ public class PerformanceView extends View {
                 Color.parseColor("#87CEFA"), Color.parseColor("#4682B4")};
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(ConvertUtils.sp2px(12));
-        scaleW = ConvertUtils.dp2px(10);//即一毫秒对应的像素
+        mPaint.setTextSize(ConvertUtils.sp2px(7));
+        scaleW = 0.3f;//即一毫秒对应的像素
     }
 
     @Override
@@ -56,6 +57,11 @@ public class PerformanceView extends View {
         super.onDraw(canvas);
         for (CallDrawItem method : MethodQueue.methods) {
             caculate(method);
+            if (method.w > maxW) {
+                maxW = method.w;
+                requestLayout();
+                return;
+            }
         }
         int nextX = 0;
         int nextY = 0;
@@ -92,7 +98,7 @@ public class PerformanceView extends View {
         mPaint.setColor(getRandomColor());
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
-        drawRightTop(item.signature, item.pos, canvas);
+        drawRightTop(getName(item.signature), item.pos, canvas);
 
         //绘制孩子
         if (item.childs != null) {
@@ -113,21 +119,19 @@ public class PerformanceView extends View {
             return;
         }
         LogUtil.d("开始测量方法：" + item.signature);
+        item.w = (int) (item.totalTime * scaleW);
         if (item.childs == null || item.childs.size() == 0) {//没有子调用，直接知道高度和宽度
             item.h = methodH;
-            item.w = (int) ((item.endTIme - item.startTime) * scaleW);
+            LogUtil.d("方法：" + item.signature + " 时间：" + (item.endTIme - item.startTime) + " 宽度：" + item.w);
             LogUtil.d("没有孩子，直接测量： w:" + item.w + " h:" + item.h);
             return;
         }
 
-        int totalW = 0;
         int totalH = 0;
         for (CallDrawItem callDrawItem : item.childs) {
             caculate(callDrawItem);
-            totalW += callDrawItem.w;
             totalH += callDrawItem.h;
         }
-        item.w = totalW;
         item.h = totalH;
 
         LogUtil.d("有孩子，测量得到： w:" + item.w + " h:" + item.h);
@@ -196,8 +200,30 @@ public class PerformanceView extends View {
         int h = temp.height();
 
         canvas.drawText(methodName, rect.right - w, rect.top + h, mPaint);
-
-
     }
 
+    /**
+     * 据签名获得方法的名称
+     * @param signature
+     * @return
+     */
+    private String getName(String signature) {
+        if (TextUtils.isEmpty(signature)) {
+            return "";
+        }
+        int index = signature.lastIndexOf(".");
+        if (index <= 0) {
+            return "";
+        }
+        return signature.substring(index + 1);
+    }
+
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (maxW > 0 && maxW > ScreenUtils.getScreenWidth()) {
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxW, MeasureSpec.EXACTLY);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 }

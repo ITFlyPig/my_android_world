@@ -1,5 +1,9 @@
 package com.wangyuelin.performance.show;
 
+import com.alibaba.fastjson.JSON;
+import com.wangyuelin.myandroidworld.util.LogUtil;
+import com.wangyuelin.performance.CallBean;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -18,16 +22,9 @@ public class MethodQueue {
     }
 
     public static void makeTest() {
-        CallDrawItem bean = new CallDrawItem("methos1", 49L, 1L, 50L, "class1", null);
-        CallDrawItem bean11 = new CallDrawItem("methos11", 1L, 9L, 10L, "class11", null);
-        CallDrawItem bean111 = new CallDrawItem("methos111", 1L, 6L, 7L, "class111", null);
-        CallDrawItem bean12 = new CallDrawItem("methos12", 11L, 6L, 18L, "class11", null);
-        bean.childs = new ArrayList<>();
-        bean.childs.add(bean11);
-        bean.childs.add(bean12);
-        bean11.childs = new ArrayList<>();
-        bean11.childs.add(bean111);
-
-        methods.add(bean);
+        String json = "{\"args\":[null],\"childs\":[{\"args\":[],\"childs\":[{\"args\":[],\"childs\":[{\"args\":[],\"classC\":\"void com.wangyuelin.app.TestActivity\",\"endTIme\":1560500707229,\"parent\":{\"$ref\":\"$.childs[0].childs[0]\"},\"signature\":\"void com.wangyuelin.app.TestActivity.method3()\",\"startTime\":1560500706928,\"totalTime\":301}],\"classC\":\"void com.wangyuelin.app.TestActivity\",\"endTIme\":1560500707229,\"parent\":{\"$ref\":\"$.childs[0]\"},\"signature\":\"void com.wangyuelin.app.TestActivity.method2()\",\"startTime\":1560500705926,\"totalTime\":1303}],\"classC\":\"void com.wangyuelin.app.TestActivity\",\"endTIme\":1560500707229,\"parent\":{\"$ref\":\"$\"},\"signature\":\"void com.wangyuelin.app.TestActivity.method1()\",\"startTime\":1560500703925,\"totalTime\":3304},{\"args\":[],\"classC\":\"void com.wangyuelin.app.TestActivity\",\"endTIme\":1560500707730,\"parent\":{\"$ref\":\"$\"},\"signature\":\"void com.wangyuelin.app.TestActivity.method4()\",\"startTime\":1560500707229,\"totalTime\":501}],\"classC\":\"void com.wangyuelin.app.TestActivity\",\"endTIme\":1560500707731,\"signature\":\"void com.wangyuelin.app.TestActivity.onCreate(Bundle)\",\"startTime\":1560500703892,\"totalTime\":3839}";
+        CallDrawItem callBean =  JSON.parseObject(json, CallDrawItem.class);
+        methods.add(callBean);
+        LogUtil.d("wyl", "转换后的对象：" + callBean.toString());
     }
 }

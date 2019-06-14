@@ -4,7 +4,7 @@ apply plugin: 'android-aspectjx'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "myandroidworld.wangyuelin.com.myandroidworld"
+        applicationId "com.wangyuelin.app"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1

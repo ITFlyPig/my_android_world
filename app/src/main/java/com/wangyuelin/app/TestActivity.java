@@ -1,12 +1,9 @@
-package myandroidworld.wangyuelin.com.myandroidworld;
+package com.wangyuelin.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.wangyuelin.performance.show.CallDrawItem;
-
-import java.util.ArrayList;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -19,19 +16,21 @@ public class TestActivity extends AppCompatActivity {
         method4();
     }
 
-    private void method1(){
+    private void method1() {
         System.out.println("method1");
         method2();
     }
 
-    private void method2(){
+    private void method2() {
         System.out.println("method1");
         method3();
     }
-    private void method3(){
+
+    private void method3() {
         System.out.println("method1");
     }
-    private void method4(){
+
+    private void method4() {
         System.out.println("method1");
     }
 

@@ -4,17 +4,18 @@
     android:layout_height="match_parent"
     android:gravity="center">
     <!--<com.wangyuelin.uiwidgetmodule.EasyScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!--<TextView-->
-            <!--android:layout_width="100dp"-->
-            <!--android:layout_height="100dp"-->
-            <!--android:background="@color/colorPrimary"/>-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+    <!--<TextView-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:background="@color/colorPrimary"/>-->
     <!--</com.wangyuelin.uiwidgetmodule.EasyScrollView>-->
+
 
     <com.wangyuelin.performance.show.PerformanceView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccent"/>
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>

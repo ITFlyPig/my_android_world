@@ -17,6 +17,9 @@ public class CallBean {
     public List<CallBean> childs;//被调用的子方法
     public CallBean parent;//父调用
 
+    public CallBean() {
+    }
+
     public CallBean(String signature, long totalTime, long startTime, long endTIme, String classC, Object[] args) {
         this.signature = signature;
         this.totalTime = totalTime;
