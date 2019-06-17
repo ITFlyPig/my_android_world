@@ -38,6 +38,7 @@ public class PerformanceView extends View {
     private int methodCutPointSpace = ConvertUtils.dp2px(5);//代码片段之间的间隔
     private long aniTime = 400;//动画的时间
     private long distancePerFrame;
+    private int curColorIndex;//颜色的索引
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -228,7 +229,12 @@ public class PerformanceView extends View {
      * @return
      */
     private int getRandomColor() {
-        return colors[random(0, colors.length)];
+        if (curColorIndex >= colors.length) {
+            curColorIndex = 0;
+        }
+        int color = colors[curColorIndex];
+        curColorIndex++;
+        return color;
     }
 
     /**
