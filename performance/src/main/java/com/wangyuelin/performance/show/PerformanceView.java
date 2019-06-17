@@ -20,6 +20,8 @@ import java.util.Random;
 /**
  * 显示方法调用的柱状图
  * 以后考虑使用SurfaceView实现
+ * 横轴：表示调用的时间序列
+ * 纵轴：表示方法的包含关系或者调用序列
  */
 public class PerformanceView extends View {
     private Paint mPaint;
