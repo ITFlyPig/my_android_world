@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.wangyuelin.myandroidworld.util.ConvertUtils;
@@ -41,6 +42,7 @@ public class PerformanceView extends View {
     private long aniTime = 4000;//动画的时间
     private long distancePerFrame;
     private int curColorIndex;//颜色的索引
+    private boolean isPause = false;//是否暂停
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -95,21 +97,25 @@ public class PerformanceView extends View {
 //        }, 700);
 
         startLoop();
+        handlePause();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //检查是否有需要绘制的
-        CallDrawItem waitItem = MethodQueue.getWait();
-        if (waitItem != null) {
-            MethodQueue.methods.add(0, waitItem);
-            LogUtil.d("tt","将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine );
-            baseLine -= (waitItem.h + methodCutPointSpace);
-            distancePerFrame = getDistancePerFrame(Math.abs(baseLine), aniTime);
-            LogUtil.d("tt","更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
+        if (!isPause) {
+            CallDrawItem waitItem = MethodQueue.getWait();
+            if (waitItem != null) {
+                MethodQueue.methods.add(0, waitItem);
+                LogUtil.d("tt","将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine );
+                baseLine -= (waitItem.h + methodCutPointSpace);
+                distancePerFrame = getDistancePerFrame(Math.abs(baseLine), aniTime);
+                LogUtil.d("tt","更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
+            }
+            baseLine += distancePerFrame;
         }
-        baseLine += distancePerFrame;
+
         LogUtil.d("tt","onDraw的基线：" + baseLine);
         if (baseLine < 0) {
             invalidate();
@@ -332,5 +338,24 @@ public class PerformanceView extends View {
                }
            }
        }, 1000, 2000);
+    }
+
+    /**
+     * 处理暂停
+     */
+    private void handlePause() {
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                    isPause = true;
+                    return true;
+                } else if (event.getAction() == MotionEvent.ACTION_UP){
+                    isPause = false;
+                }
+                return false;
+            }
+        });
     }
 }
