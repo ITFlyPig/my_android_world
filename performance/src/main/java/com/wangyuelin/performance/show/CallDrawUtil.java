@@ -20,7 +20,7 @@ public class CallDrawUtil {
         item.w = (int) (item.totalTime * scaleW);
         if (item.childs == null || item.childs.size() == 0) {//没有子调用，直接知道高度和宽度
             item.h = methodH;
-            LogUtil.d("方法：" + item.signature + " 时间：" + (item.endTIme - item.startTime) + " 宽度：" + item.w);
+            LogUtil.d("方法：" + item.signature + " 时间：" + item.totalTime + " 宽度：" + item.w);
             LogUtil.d("没有孩子，直接测量： w:" + item.w + " h:" + item.h);
             return;
         }

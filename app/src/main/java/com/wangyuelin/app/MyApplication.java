@@ -12,7 +12,7 @@ public class MyApplication extends BaseApplication {
         ThreadHelper.getInstance().submit(new Runnable() {
             @Override
             public void run() {
-                WebSocketHelper.getInstance().connect("sid");
+                WebSocketHelper.getInstance().connect("o");
             }
         });
     }

@@ -19,6 +19,8 @@ import com.wangyuelin.myandroidworld.util.ScreenUtils;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 显示方法调用的柱状图
@@ -36,7 +38,7 @@ public class PerformanceView extends View {
 
     private int baseLine;//绘制的基线
     private int methodCutPointSpace = ConvertUtils.dp2px(5);//代码片段之间的间隔
-    private long aniTime = 400;//动画的时间
+    private long aniTime = 4000;//动画的时间
     private long distancePerFrame;
     private int curColorIndex;//颜色的索引
 
@@ -63,34 +65,36 @@ public class PerformanceView extends View {
         mPaint.setTextSize(ConvertUtils.sp2px(7));
         scaleW = 0.3f;//即一毫秒对应的像素
 
-        final Handler handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                LogUtil.d("开始添加绘制");
-                MethodQueue.waits.add(MethodQueue.getTest());
-                LogUtil.d("添加完成");
-                invalidate();
-            }
-        };
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(100);
-            }
-        }, 300);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(100);
-            }
-        }, 100);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(100);
-            }
-        }, 700);
+//        final Handler handler = new Handler(){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                LogUtil.d("开始添加绘制");
+//                MethodQueue.waits.add(MethodQueue.getTest());
+//                LogUtil.d("添加完成");
+//                invalidate();
+//            }
+//        };
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                handler.sendEmptyMessage(100);
+//            }
+//        }, 300);
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                handler.sendEmptyMessage(100);
+//            }
+//        }, 100);
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                handler.sendEmptyMessage(100);
+//            }
+//        }, 700);
+
+        startLoop();
     }
 
     @Override
@@ -123,6 +127,9 @@ public class PerformanceView extends View {
         //计算缩放的比例
         if (maxW > 0) {
             scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(50))/ (float)maxW;
+
+            //测试
+            scaleW = 5;
         }
 
         LogUtil.d("计算的缩放比例：" + scaleW + " 屏幕的宽度：" + ScreenUtils.getScreenWidth() + " 最大的宽度：" + maxW);
@@ -250,8 +257,18 @@ public class PerformanceView extends View {
         mPaint.getTextBounds(methodName, 0, methodName.length(), temp);
         int w = temp.width();
         int h = temp.height();
+        float x = 0;
+        float y = 0;
+        if (rect.width() < w) {//绘制到外面
+            y = rect.top + h;
+            x = rect.left;
 
-        canvas.drawText(methodName, rect.right - w, rect.top + h, mPaint);
+        } else {
+            x = rect.right - w;
+            y = rect.top + h;
+        }
+
+        canvas.drawText(methodName, x, y, mPaint);
     }
 
     /**
@@ -303,5 +320,17 @@ public class PerformanceView extends View {
         }
 
         return (int) (distance / (duration / 16.6F));
+    }
+
+    private void startLoop() {
+       new Timer().scheduleAtFixedRate(new TimerTask() {
+           @Override
+           public void run() {
+               LogUtil.d("检查是否有需要绘制的");
+               if (MethodQueue.waits.size() > 0) {
+                   invalidate();
+               }
+           }
+       }, 1000, 2000);
     }
 }
