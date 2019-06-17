@@ -5,9 +5,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.wangyuelin.myandroidworld.util.ConvertUtils;
@@ -26,10 +29,15 @@ import java.util.Random;
 public class PerformanceView extends View {
     private Paint mPaint;
     private int[] colors;//柱子的颜色池
-    private int methodH;//方法对应柱子的最小高度
+    public static int methodH;//方法对应柱子的最小高度
     private float scaleW;//横向缩放比例
     private int maxW;//最大的宽度
 
+
+    private int baseLine;//绘制的基线
+    private int methodCutPointSpace = ConvertUtils.dp2px(5);//代码片段之间的间隔
+    private long aniTime = 400;//动画的时间
+    private long distancePerFrame;
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -53,11 +61,57 @@ public class PerformanceView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
         scaleW = 0.3f;//即一毫秒对应的像素
+
+        final Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                LogUtil.d("开始添加绘制");
+                MethodQueue.waits.add(MethodQueue.getTest());
+                LogUtil.d("添加完成");
+                invalidate();
+            }
+        };
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(100);
+            }
+        }, 300);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(100);
+            }
+        }, 100);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(100);
+            }
+        }, 700);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        //检查是否有需要绘制的
+        CallDrawItem waitItem = MethodQueue.getWait();
+        if (waitItem != null) {
+            MethodQueue.methods.add(0, waitItem);
+            LogUtil.d("tt","将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine );
+            baseLine -= (waitItem.h + methodCutPointSpace);
+            distancePerFrame = getDistancePerFrame(Math.abs(baseLine), aniTime);
+            LogUtil.d("tt","更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
+        }
+        baseLine += distancePerFrame;
+        LogUtil.d("tt","onDraw的基线：" + baseLine);
+        if (baseLine < 0) {
+            invalidate();
+        } else if (baseLine > 0) {
+            baseLine = 0;
+        }
+
         //获得最大的宽度
         for (CallDrawItem method : MethodQueue.methods) {
             int w = getW(method);
@@ -75,12 +129,12 @@ public class PerformanceView extends View {
 
         //计算尺寸
         for (CallDrawItem method : MethodQueue.methods) {
-            caculate(method);
+            CallDrawUtil.caculate(method, scaleW, methodH);
         }
 
+        //布局
         int nextX = 0;
-        int nextY = 0;
-
+        int nextY = baseLine;
         Iterator<CallDrawItem> it = MethodQueue.methods.iterator();
         while (it.hasNext()) {
             CallDrawItem next = it.next();
@@ -110,7 +164,10 @@ public class PerformanceView extends View {
         }
 
         //绘制自己
-        mPaint.setColor(getRandomColor());
+        if (item.color == 0) {
+            item.color = getRandomColor();
+        }
+        mPaint.setColor(item.color);
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
         drawRightTop(getName(item.signature), item.pos, canvas);
@@ -125,33 +182,7 @@ public class PerformanceView extends View {
     }
 
 
-    /**
-     * 计算每个item对应的柱状图
-     * 可以计算得到w和h
-     */
-    public void caculate(CallDrawItem item) {
-        if (item == null) {
-            return;
-        }
-        LogUtil.d("开始测量方法：" + item.signature);
-        item.w = (int) (item.totalTime * scaleW);
-        if (item.childs == null || item.childs.size() == 0) {//没有子调用，直接知道高度和宽度
-            item.h = methodH;
-            LogUtil.d("方法：" + item.signature + " 时间：" + (item.endTIme - item.startTime) + " 宽度：" + item.w);
-            LogUtil.d("没有孩子，直接测量： w:" + item.w + " h:" + item.h);
-            return;
-        }
 
-        int totalH = 0;
-        for (CallDrawItem callDrawItem : item.childs) {
-            caculate(callDrawItem);
-            totalH += (callDrawItem.h + ConvertUtils.dp2px(3));
-        }
-        item.h = totalH;
-
-        LogUtil.d("有孩子，测量得到： w:" + item.w + " h:" + item.h);
-
-    }
 
     /**
      * 更新每个元素的绘制位置
@@ -249,5 +280,22 @@ public class PerformanceView extends View {
             return 0;
         }
         return  (int) item.totalTime;
+    }
+
+    /**
+     * 据距离和时间或者每一帧应该移动的距离
+     * @param distance  距离
+     * @param duration  时间
+     * @return
+     */
+    private int getDistancePerFrame(int distance, long duration) {
+        if (distance == 0) {
+            return 0;
+        }
+        if (duration == 0) {
+            return distance;
+        }
+
+        return (int) (distance / (duration / 16.6F));
     }
 }
