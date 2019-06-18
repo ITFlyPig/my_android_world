@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-aspectjx'
 
 android {
     compileSdkVersion 28
@@ -18,11 +17,6 @@ android {
         }
     }
 
-    aspectjx {
-        //开关AspectJX功能
-        enabled true
-        include 'com.wangyuelin'
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,3 +39,4 @@ dependencies {
     implementation project(':common')
     implementation project(':performance')
 }
+
