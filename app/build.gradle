@@ -21,8 +21,13 @@ android {
     aspectjx {
         //开关AspectJX功能
         enabled true
+        include 'com.wangyuelin'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
@@ -33,6 +38,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'org.aspectj:aspectjrt:1.9.4'
 
     implementation project(':utilmodule')
     implementation project(':uiwidgetmodule')

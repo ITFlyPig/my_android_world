@@ -9,11 +9,6 @@ public class MyApplication extends BaseApplication {
     public void onCreate() {
         super.onCreate();
 
-        ThreadHelper.getInstance().submit(new Runnable() {
-            @Override
-            public void run() {
-                WebSocketHelper.getInstance().connect("o");
-            }
-        });
+        ThreadHelper.getInstance().submit(() -> WebSocketHelper.getInstance().connect("o"));
     }
 }

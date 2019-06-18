@@ -28,7 +28,7 @@ public class MethodQueue {
             }
         });
 
-//        makeTest();
+        makeTest();
 
     }
 
