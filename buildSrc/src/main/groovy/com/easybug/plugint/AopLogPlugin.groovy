@@ -13,8 +13,12 @@ class AopLogPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        def android = project.extensions.findByType(AppExtension.class)
-        android.registerTransform(new PreClass(project))
+        final def log = project.logger
+        log.error("开始添加AOP代码")
+//        def android = project.extensions.findByType(AppExtension.class)
+//        android.registerTransform(new PreClass(project))
+
+        project.android.registerTransform(new PreClass(project))
 
     }
 }
