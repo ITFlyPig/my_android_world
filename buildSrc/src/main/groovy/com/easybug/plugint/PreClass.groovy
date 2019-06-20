@@ -41,9 +41,16 @@ class PreClass extends Transform {
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each { TransformInput input ->
             try {
+                //获取到插入代码所在的jar包，然后添加到Javassist的类搜索路径
+                input.jarInputs.each {
+                    if (it.file.getAbsolutePath().contains("performance")) {
+                        LogUtil.e("将jar包添加到搜索路径：" + it.file.path)
+                        JavassistHelper.instance.appendClassPath(it.file.path)
+                    }
+                }
                 input.jarInputs.each {
                     String[] packages = new String[1]
-                    packages[0] = "com"
+                    packages[0] = "wangyuelin"
                     File modifiedFile = MyInject.injectJar(it.file.getAbsolutePath(), context.temporaryDir.path, packages, project)
                     String outputFileName = null
 
@@ -73,7 +80,7 @@ class PreClass extends Transform {
                 FileUtils.copyDirectory(directoryInput.file, dest)
             }
         }
-//        ClassPool.getDefault().clearImportedPackages();
+        JavassistHelper.instance.clearImportedPackages()
 
     }
 }

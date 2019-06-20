@@ -21,15 +21,12 @@ public class JarUtil {
      * @param tempDir 临时文件存放
      * @param project
      */
-    public static File injectJar(File jarFile, String tempDir, Project project) {
+    public static File injectJar(File jarFile, String tempDir, Project project, String[] needPackages) {
 
         JavassistHelper.instance.appendClassPath(jarFile.path)
         //加入android.jar，否则找不到android相关的所有类
         JavassistHelper.instance.appendClassPath(project.android.bootClasspath[0].toString())
         LogUtil.e("bootClasspath 路径：" + project.android.bootClasspath[0].toString())
-
-        //插入使用到的类
-        JavassistHelper.instance.importPackage("com.wangyuelin.performance.MethodCall")
 
         //读取原来的jar
         JarFile originJar = new JarFile(jarFile)
@@ -57,10 +54,10 @@ public class JarUtil {
             byte[] originClassBytes = IOUtils.toByteArray(inputStream)//未修改的class字节码
 
 
-            if (entryName.endsWith(".class") && entryName.contains("wangyuelin")) {//确认是class文件，然后修改
+            if (entryName.endsWith(".class") ) {//确认是class文件，然后修改
                 LogUtil.e("开始修改的class文件：" + entryName)
                 def className = entryName.replace(".class", "")
-                modifiedClassBytes = modifyClasses(className)
+                modifiedClassBytes = modifyClasses(className, needPackages)
             }
             if (modifiedClassBytes == null) {
                 jarOutputStream.write(originClassBytes)//使用未修改的字节码
@@ -85,23 +82,33 @@ public class JarUtil {
      * @param className 类名称
      * @return
      */
-    private static byte[] modifyClasses(String className) {
+    private static byte[] modifyClasses(String className, String[] needPackages) {
         CtClass ctClass = JavassistHelper.instance.getClass(className)
         LogUtil.e("获取到对应的CtClass")
-        if (ctClass == null) {
+
+        boolean needHandle = isNeedPackage(ctClass.packageName, needPackages)
+        LogUtil.e("是否需要处理：" + needHandle)
+
+        if (ctClass == null || !needHandle) {
             //没有获取到想要修改的class
             return null
         }
         if (ctClass.isFrozen()) ctClass.defrost()
         //getDeclaredMethods获取自己申明的方法，getMethods()会把所有父类的方法都加上
-        for (CtMethod ctmethod : ctClass.getDeclaredMethods()) {
-            LogUtil.e("开始对方法插入切面代码：" + ctmethod.longName)
-            if (!ctmethod.isEmpty() && !ctmethod.getMethodInfo().isConstructor()) {//有方法体且不是构造方法才插入
-                LogUtil.e("有方法体，插入start" )
-                ctmethod.insertAfter("System.out.println(\"Aop插入\");")
-                LogUtil.e("有方法体，插入end" )
-            }
+        if (!isAopClass(ctClass.name)) {
+            for (CtMethod ctmethod : ctClass.getDeclaredMethods()) {
+                LogUtil.e("开始对方法插入切面代码：" + ctmethod.longName + " className:" + ctClass.name)
+                if (!ctmethod.isEmpty() && !ctmethod.getMethodInfo().isConstructor()) {//有方法体且不是构造方法才插入
+                    LogUtil.e("有方法体，插入start" )
+//                ctmethod.insertAfter("System.out.println(\"Aop插入\");")
 
+                    String afterCode = "com.wangyuelin.performance.MethodCall.onEnd(\""+ ctmethod.longName +"\");\n"
+                    LogUtil.e("插入代码：" + afterCode + "\n 所有引入的包：" + JavassistHelper.instance.getImportedPackages())
+                    ctmethod.insertAfter(afterCode)
+                    LogUtil.e("有方法体，插入end" )
+                }
+
+            }
         }
 
         byte[] modifyClassBytes = ctClass.toBytecode()
@@ -149,4 +156,30 @@ public class JarUtil {
         void onEntry(JarEntry jarEntry);
     }
 
+    /**
+     * 是否是aop的类
+     * @param className
+     * @return
+     */
+    private static boolean isAopClass(String className) {
+       return className.contains("com.wangyuelin.performance.MethodCall")
+    }
+
+    /**
+     * 是否是需要处理的包
+     * @param packageStr
+     * @return
+     */
+    private static boolean isNeedPackage(String packageStr, String[] needPackages) {
+        if (needPackages == null || needPackages.length == 0) {
+            return false
+        }
+
+        for (int i = 0; i < needPackages.length; i++) {
+            if (packageStr.contains(needPackages[i])) {
+                return true
+            }
+        }
+        return false
+    }
 }

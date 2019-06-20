@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.wangyuelin.myandroidworld.util.LogUtil;
 import com.wangyuelin.performance.CallBean;
 import com.wangyuelin.performance.CallHelper;
+import com.wangyuelin.performance.MethodCall;
 import com.wangyuelin.performance.ThreadHelper;
 
 import org.aspectj.lang.JoinPoint;
@@ -51,6 +52,7 @@ public class MethodTime {
     @Around("execution( * com.wangyuelin.app..*.*(..))")
     public void aroundAspect(ProceedingJoinPoint point) {
         LogUtil.d("开始执行方法前");
+
         try {
             point.proceed();
         } catch (Throwable throwable) {

@@ -1,5 +1,7 @@
 package com.easybug.plugint;
 
+import java.util.Iterator;
+
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
@@ -31,6 +33,11 @@ public class JavassistHelper {
         }
     }
 
+    /**
+     * 获得类
+     * @param className
+     * @return
+     */
     public CtClass getClass(String className) {
         try {
             className = className.replaceAll("/", ".");
@@ -51,6 +58,23 @@ public class JavassistHelper {
      */
     public void importPackage(String packageName) {
         classPool.importPackage(packageName);
+
     }
 
+    /**
+     * 获取所有引入的包
+     * @return
+     */
+    public String getImportedPackages() {
+        Iterator<String> it = classPool.getImportedPackages();
+        String packages = "";
+        while (it.hasNext()) {
+            packages += it.next() + "||";
+        }
+        return packages;
+    }
+
+    public void clearImportedPackages() {
+        classPool.clearImportedPackages();
+    }
 }

@@ -44,7 +44,7 @@ public class MyInject {
         //1.判断是否是需要处理饿jar（jar是否是处理过的）
 
         //2.处理jar
-        return JarUtil.injectJar(new File(jarPath), tempDir, project)
+        return JarUtil.injectJar(new File(jarPath), tempDir, project, needPackageNames)
 
     }
 }
