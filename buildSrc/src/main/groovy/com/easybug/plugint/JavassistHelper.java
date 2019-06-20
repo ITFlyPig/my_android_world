@@ -33,6 +33,7 @@ public class JavassistHelper {
 
     public CtClass getClass(String className) {
         try {
+            className = className.replaceAll("/", ".");
             return classPool.getCtClass(className);
         } catch (NotFoundException e) {
             e.printStackTrace();
@@ -44,5 +45,12 @@ public class JavassistHelper {
         ctClass.detach();//用完一定记得要卸载，否则pool里的永远是旧的代码
     }
 
+    /**
+     * 载入包/类
+     * @param packageName
+     */
+    public void importPackage(String packageName) {
+        classPool.importPackage(packageName);
+    }
 
 }

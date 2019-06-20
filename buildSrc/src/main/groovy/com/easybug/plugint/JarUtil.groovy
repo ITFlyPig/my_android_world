@@ -1,8 +1,11 @@
+package com.easybug.plugint
+
 import com.easybug.plugint.JavassistHelper
 import javassist.CtClass
 import javassist.CtMethod
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.apache.http.util.TextUtils
 import org.gradle.api.Project
 
 import java.util.jar.JarEntry
@@ -10,20 +13,33 @@ import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 
-public class JarUtil{
+public class JarUtil {
 
-    public static void injectJar(File jarFile, String tempDir, String needPackageName, Project project) {
+    /**
+     * jar中的字节码注入代码
+     * @param jarFile 需要被注入的jar包
+     * @param tempDir 临时文件存放
+     * @param project
+     */
+    public static File injectJar(File jarFile, String tempDir, Project project) {
 
         JavassistHelper.instance.appendClassPath(jarFile.path)
         //加入android.jar，否则找不到android相关的所有类
         JavassistHelper.instance.appendClassPath(project.android.bootClasspath[0].toString())
+        LogUtil.e("bootClasspath 路径：" + project.android.bootClasspath[0].toString())
+
+        //插入使用到的类
+        JavassistHelper.instance.importPackage("com.wangyuelin.performance.MethodCall")
 
         //读取原来的jar
         JarFile originJar = new JarFile(jarFile)
 
         //输出的临时jar文件
-        String  hexName = DigestUtils.md5Hex(jarFile.getAbsolutePath()).substring(0, 8)//避免和现有的jar文件重复
+        String hexName = DigestUtils.md5Hex(jarFile.getAbsolutePath()).substring(0, 8)
+        //避免和现有的jar文件重复
         File outputJar = new File(tempDir, hexName + jarFile.getName())
+        LogUtil.e("原来的jar文件：" + jarFile.path)
+        LogUtil.e("修改后的jar文件：" + outputJar)
         JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(outputJar))
 
         //开始遍历jar文件里面的class
@@ -41,30 +57,37 @@ public class JarUtil{
             byte[] originClassBytes = IOUtils.toByteArray(inputStream)//未修改的class字节码
 
 
-            if (entryName.endsWith(".class")) {//确认是class文件，然后修改
+            if (entryName.endsWith(".class") && entryName.contains("wangyuelin")) {//确认是class文件，然后修改
+                LogUtil.e("开始修改的class文件：" + entryName)
                 def className = entryName.replace(".class", "")
-                modifiedClassBytes = modifyClasses(originClassBytes, className)
+                modifiedClassBytes = modifyClasses(className)
             }
             if (modifiedClassBytes == null) {
                 jarOutputStream.write(originClassBytes)//使用未修改的字节码
+                LogUtil.e("class文件修改失败")
             } else {
                 jarOutputStream.write(modifiedClassBytes)//使用修改后的字节码
+                LogUtil.e("class文件修改成功")
             }
 
 
         }
 
+        jarOutputStream.close()
+        originJar.close()
+        return outputJar
     }
 
 
     /**
      * 获得修改后的类字节码
-     * @param originClassBytes  未修改的字节码
-     * @param className   类名称
+     * @param originClassBytes 未修改的字节码
+     * @param className 类名称
      * @return
      */
-    private static byte[] modifyClasses(byte[] originClassBytes, String className) {
-        CtClass ctClass = JavassistHelper.instance.getClass()
+    private static byte[] modifyClasses(String className) {
+        CtClass ctClass = JavassistHelper.instance.getClass(className)
+        LogUtil.e("获取到对应的CtClass")
         if (ctClass == null) {
             //没有获取到想要修改的class
             return null
@@ -72,12 +95,58 @@ public class JarUtil{
         if (ctClass.isFrozen()) ctClass.defrost()
         //getDeclaredMethods获取自己申明的方法，getMethods()会把所有父类的方法都加上
         for (CtMethod ctmethod : ctClass.getDeclaredMethods()) {
-            ctmethod.insertAfter("MethodCall.onEnd(" + ctmethod.longName + ");")
+            LogUtil.e("开始对方法插入切面代码：" + ctmethod.longName)
+            if (!ctmethod.isEmpty() && !ctmethod.getMethodInfo().isConstructor()) {//有方法体且不是构造方法才插入
+                LogUtil.e("有方法体，插入start" )
+                ctmethod.insertAfter("System.out.println(\"Aop插入\");")
+                LogUtil.e("有方法体，插入end" )
+            }
+
         }
 
-        byte [] modifyClassBytes = ctClass.toBytecode()
+        byte[] modifyClassBytes = ctClass.toBytecode()
         JavassistHelper.instance.detach(ctClass)
-        return modifyClassBytes;
+
+        return modifyClassBytes
+    }
+
+    public static boolean isNeedHandle(File jarFile, String[] packages) {
+        if (packages == null || packages.length == 0) {
+            return false
+        }
+
+        //遍历jar，并且处理里面的class
+        eachClass(jarFile, new JarEachListener() {
+
+            @Override
+            void onEntry(JarEntry jarEntry) {
+
+
+            }
+        })
+
+    }
+
+    /**
+     * 遍历jar包
+     * @param jarFile 需要被遍历的jar文件
+     * @param listener 每一个被遍历到的Entry的回调
+     */
+    public static void eachClass(File jarFile, JarEachListener listener) {
+        if (listener == null || jarFile == null) {
+            return
+        }
+        JarFile originJar = new JarFile(jarFile)
+        //开始遍历jar文件里面的class
+        Enumeration enumeration = originJar.entries()
+        while (enumeration.hasMoreElements()) {
+            JarEntry jarEntry = (JarEntry) enumeration.nextElement()
+            listener.onEntry(jarEntry)
+        }
+    }
+
+    interface JarEachListener {
+        void onEntry(JarEntry jarEntry);
     }
 
 }

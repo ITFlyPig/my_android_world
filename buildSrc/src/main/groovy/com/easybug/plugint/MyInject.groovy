@@ -1,5 +1,8 @@
+package com.easybug.plugint
 import com.wangyuelin.easybug.aop.Util
 import org.gradle.api.Project
+
+import java.util.jar.JarEntry
 
 /**
  * 代码的注入
@@ -33,10 +36,15 @@ public class MyInject {
      * @param needPackageName
      * @param project
      */
-    public static void injectJar(String jarPath, String tempDir, String needPackageName, Project project) {
+    public static File injectJar(String jarPath, String tempDir, String[] needPackageNames, Project project) {
+        if (jarPath == null) {
+            return
+        }
 
-        //1.判断是否是需要处理饿jar（jar里面的class是否有需要修改的和jar是否是处理过的）
+        //1.判断是否是需要处理饿jar（jar是否是处理过的）
+
         //2.处理jar
+        return JarUtil.injectJar(new File(jarPath), tempDir, project)
 
     }
 }

@@ -42,10 +42,22 @@ class PreClass extends Transform {
         inputs.each { TransformInput input ->
             try {
                 input.jarInputs.each {
-                    MyInject.injectDir(it.file.getAbsolutePath(), "com", project)
-                    String outputFileName = it.name.replace(".jar", "") + '-' + it.file.path.hashCode()
-                    def output = outputProvider.getContentLocation(outputFileName, it.contentTypes, it.scopes, Format.JAR)
-                    FileUtils.copyFile(it.file, output)
+                    String[] packages = new String[1]
+                    packages[0] = "com"
+                    File modifiedFile = MyInject.injectJar(it.file.getAbsolutePath(), context.temporaryDir.path, packages, project)
+                    String outputFileName = null
+
+                    if (modifiedFile != null) {//使用修改后的jar文件
+                        outputFileName = modifiedFile.name
+                    } else {//使用未修改的jar文件
+                        outputFileName = it.name.replace(".jar", "") + '-' + it.file.path.hashCode()
+                        modifiedFile = it.file
+                    }
+
+                    def output = outputProvider.getContentLocation(outputFileName, it.contentTypes, it.scopes, Format.JAR)//获得输出的路劲
+                    LogUtil.e("将修改后的从：" + modifiedFile.path)
+                    LogUtil.e("拷贝到：" + output.path)
+                    FileUtils.copyFile(modifiedFile, output)
                 }
             } catch (Exception e) {
                 project.logger.err e.getMessage()
