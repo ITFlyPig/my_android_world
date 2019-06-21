@@ -30,6 +30,12 @@ public class AopMethodVisitor extends MethodVisitor implements Opcodes {
 
     @Override
     public void visitCode() {
+//        visitInsn()：访问一个0操作数的指令  visitLdcInsn：访问LDC命令：将一个常量加载到操作数栈  visitTypeInsn: 放问只有一个类类型作为参数的指令
+        //ICONST_0：指令意思是将常量0push到操作数栈顶
+        //ALOAD:指令用于将局部变量栈中的变量推动到操作栈上
+        //ASTORE: 从操作站弹出并将其存储在局部变量栈
+
+
 
         /**
          * 实例方法局部变量表中的存储：

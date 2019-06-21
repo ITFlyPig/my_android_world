@@ -40,14 +40,8 @@ class PreClass extends Transform {
             throws IOException, TransformException, InterruptedException {
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each { TransformInput input ->
-            try {
-                //获取到插入代码所在的jar包，然后添加到Javassist的类搜索路径
-                input.jarInputs.each {
-                    if (it.file.getAbsolutePath().contains("performance")) {
-                        LogUtil.e("将jar包添加到搜索路径：" + it.file.path)
-                        JavassistHelper.instance.appendClassPath(it.file.path)
-                    }
-                }
+//            try {
+
                 input.jarInputs.each {
                     String[] packages = new String[1]
                     packages[0] = "wangyuelin"
@@ -66,9 +60,10 @@ class PreClass extends Transform {
                     LogUtil.e("拷贝到：" + output.path)
                     FileUtils.copyFile(modifiedFile, output)
                 }
-            } catch (Exception e) {
-                project.logger.err e.getMessage()
-            }
+//            } catch (Exception e) {
+//
+//                LogUtil.e( "Preclass 异常" + e.getMessage())
+//            }
             //对类型为“文件夹”的input进行遍历
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 //文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等

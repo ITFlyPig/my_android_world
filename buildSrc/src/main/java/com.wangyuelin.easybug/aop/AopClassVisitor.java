@@ -11,13 +11,13 @@ import org.objectweb.asm.Type;
  * @outhor wangyuelin
  * @create 2018-10-19 下午4:18
  */
-public class AopClassAdapter extends ClassVisitor implements Opcodes {
+public class AopClassVisitor extends ClassVisitor implements Opcodes {
     private String className;
     private String mConstructorName = "<init>";
     private int classAccess;
 
 
-    public AopClassAdapter(int api, ClassVisitor classVisitor) {
+    public AopClassVisitor(int api, ClassVisitor classVisitor) {
         super(api, classVisitor);
     }
 
@@ -25,7 +25,7 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         className = name;//类名称
-        classAccess = access;
+        classAccess = access;//类的访问权限
     }
 
     @Override

@@ -3,10 +3,18 @@ package com.easybug.plugint
 import com.easybug.plugint.JavassistHelper
 import javassist.CtClass
 import javassist.CtMethod
+import javassist.bytecode.CodeAttribute
+import javassist.bytecode.LocalVariableAttribute
+import javassist.bytecode.MethodInfo
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
-import org.apache.http.util.TextUtils
 import org.gradle.api.Project
+import org.gradle.internal.impldep.com.google.api.client.util.ArrayMap
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Label
+import org.objectweb.asm.MethodVisitor
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -23,9 +31,9 @@ public class JarUtil {
      */
     public static File injectJar(File jarFile, String tempDir, Project project, String[] needPackages) {
 
-        JavassistHelper.instance.appendClassPath(jarFile.path)
+//        JavassistHelper.instance.appendClassPath(jarFile.path)
         //加入android.jar，否则找不到android相关的所有类
-        JavassistHelper.instance.appendClassPath(project.android.bootClasspath[0].toString())
+//        JavassistHelper.instance.appendClassPath(project.android.bootClasspath[0].toString())
         LogUtil.e("bootClasspath 路径：" + project.android.bootClasspath[0].toString())
 
         //读取原来的jar
@@ -54,10 +62,13 @@ public class JarUtil {
             byte[] originClassBytes = IOUtils.toByteArray(inputStream)//未修改的class字节码
 
 
-            if (entryName.endsWith(".class") ) {//确认是class文件，然后修改
+            if (entryName.endsWith(".class")) {//确认是class文件，然后修改
                 LogUtil.e("开始修改的class文件：" + entryName)
-                def className = entryName.replace(".class", "")
-                modifiedClassBytes = modifyClasses(className, needPackages)
+//                def className = entryName.replace(".class", "")
+//                modifiedClassBytes = modifyClasses(className, needPackages)
+                ClassBean bean = new ClassBean(jarFile.path, originClassBytes)
+                IClassHandle iClassHandle = new ASMClassHandle(bean)
+                modifiedClassBytes = iClassHandle.insertCode()
             }
             if (modifiedClassBytes == null) {
                 jarOutputStream.write(originClassBytes)//使用未修改的字节码
@@ -98,14 +109,19 @@ public class JarUtil {
         if (!isAopClass(ctClass.name)) {
             for (CtMethod ctmethod : ctClass.getDeclaredMethods()) {
                 LogUtil.e("开始对方法插入切面代码：" + ctmethod.longName + " className:" + ctClass.name)
-                if (!ctmethod.isEmpty() && !ctmethod.getMethodInfo().isConstructor()) {//有方法体且不是构造方法才插入
-                    LogUtil.e("有方法体，插入start" )
+                if (!ctmethod.isEmpty() && !ctmethod.getMethodInfo().isConstructor()) {
+//有方法体且不是构造方法才插入
+                    LogUtil.e("有方法体，插入start")
 //                ctmethod.insertAfter("System.out.println(\"Aop插入\");")
 
-                    String afterCode = "com.wangyuelin.performance.MethodCall.onEnd(\""+ ctmethod.longName +"\");\n"
-                    LogUtil.e("插入代码：" + afterCode + "\n 所有引入的包：" + JavassistHelper.instance.getImportedPackages())
+                    String beforeCode = "com.wangyuelin.performance.MethodCall.onStart(\"" + ctmethod.longName + "\"," + paramCode(getParamNames(ctmethod) ) +");"
+                    String afterCode = "com.wangyuelin.performance.MethodCall.onEnd(\"" + ctmethod.longName + "\");\n"
+                    LogUtil.e("插入代码：" + afterCode + "\n " + beforeCode )
+                    ctmethod.insertBefore(beforeCode)
                     ctmethod.insertAfter(afterCode)
-                    LogUtil.e("有方法体，插入end" )
+                    LogUtil.e("有方法体，插入end")
+
+
                 }
 
             }
@@ -162,7 +178,7 @@ public class JarUtil {
      * @return
      */
     private static boolean isAopClass(String className) {
-       return className.contains("com.wangyuelin.performance.MethodCall")
+        return className.contains("com.wangyuelin.performance.MethodCall")
     }
 
     /**
@@ -182,4 +198,92 @@ public class JarUtil {
         }
         return false
     }
+
+    /**
+     * 获取方法的参数名称
+     * @param ctMethod
+     * @return
+     */
+    private static String[] getParamNames(CtMethod ctMethod) {
+        if (ctMethod == null) {
+            return null
+        }
+        MethodInfo methodInfo = ctMethod.getMethodInfo()
+        CtClass[] parameterTypes = ctMethod.getParameterTypes()
+        CodeAttribute codeAttribute = methodInfo.getCodeAttribute()
+        LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag)
+        if (attr == null) {
+            return null
+        }
+        //方法本地参数的个数
+        int localParamSize = attr.tableLength()
+        for (int i = 0; i < localParamSize; i++) {
+            LogUtil.e("本地参数：" + attr.variableName(i))
+        }
+        //形参是放在本地方法表的最后的
+        String[] paramNames = new String[parameterTypes.length]
+        int j = 0
+        for (int i = localParamSize - parameterTypes.length; i <  localParamSize; i++) {
+            paramNames[j] =  attr.variableName(i)//取本地方法表的最后几个参数（也就是形参）
+            j++
+        }
+        LogUtil.e("获取到的参数：" + paramNames.toString())
+        return paramNames
+    }
+
+    /**
+     * 将参数转为代码
+     * @param paramNames
+     * @return
+     */
+    private static String paramCode(String[] paramNames) {
+        String code = "null"
+        if (paramNames == null) {
+            return code
+        }
+        code = "new Object[]{"
+        for (int i = 0; i < paramNames.length; i++) {
+            code += paramNames[i]
+            if (i < (paramNames.length - 1)) {
+                code += ","
+            }
+        }
+        code += "}"
+        return code
+    }
+
+    /**
+     * 由于Javassist获取的变量表，就算是实例方法，0不一定存this，也就是方法的参数不一定存在变量表最开始，没法准确获取
+     * 修改为ASM获取方法参数名称
+     * @param className类的全名称
+     * @return
+     */
+    private static HashMap<String, List<String>> parseParam(String className) {
+//        final String className = method.getDeclaringClass().getName();
+
+        HashMap<String, List<String>> map = new ArrayMap<>()
+        ClassReader cr = new ClassReader(className)
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS)
+        cr.accept(new ClassVisitor() {
+            @Override
+            MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions)
+                map.put(name, new ArrayList<>())
+                if (mv != null) {
+                    mv = new MethodVisitor() {
+                        @Override
+                        void visitLocalVariable(String vname, String vdesc, String vsignature, Label start, Label end, int index) {
+                            super.visitLocalVariable(vname, vdesc, vsignature, start, end, index)
+                            map.get(name).add(vname)
+                        }
+                    }
+                }
+
+                return mv
+            }
+        }, ClassReader.SKIP_DEBUG)
+        return map
+    }
+
+
 }
