@@ -12,6 +12,8 @@ import android.telephony.TelephonyManager;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import com.wangyuelin.common.BaseApplication;
+
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
@@ -128,17 +130,17 @@ public final class NetworkUtils {
      */
     public static boolean getMobileDataEnabled() {
         try {
-            TelephonyManager tm =
-                    (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-            if (tm == null) return false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return tm.isDataEnabled();
-            }
-            @SuppressLint("PrivateApi")
-            Method getMobileDataEnabledMethod = tm.getClass().getDeclaredMethod("getDataEnabled");
-            if (null != getMobileDataEnabledMethod) {
-                return (boolean) getMobileDataEnabledMethod.invoke(tm);
-            }
+//            TelephonyManager tm =
+//                    (TelephonyManager) BaseApplication.getApplication().getSystemService(Context.TELEPHONY_SERVICE);
+//            if (tm == null) return false;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                return tm.isDataEnabled();
+//            }
+//            @SuppressLint("PrivateApi")
+//            Method getMobileDataEnabledMethod = tm.getClass().getDeclaredMethod("getDataEnabled");
+//            if (null != getMobileDataEnabledMethod) {
+//                return (boolean) getMobileDataEnabledMethod.invoke(tm);
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,14 +158,14 @@ public final class NetworkUtils {
     @RequiresPermission(MODIFY_PHONE_STATE)
     public static void setMobileDataEnabled(final boolean enabled) {
         try {
-            TelephonyManager tm =
-                    (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-            if (tm == null) return;
-            Method setMobileDataEnabledMethod =
-                    tm.getClass().getDeclaredMethod("setDataEnabled", boolean.class);
-            if (null != setMobileDataEnabledMethod) {
-                setMobileDataEnabledMethod.invoke(tm, enabled);
-            }
+//            TelephonyManager tm =
+//                    (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+//            if (tm == null) return;
+//            Method setMobileDataEnabledMethod =
+//                    tm.getClass().getDeclaredMethod("setDataEnabled", boolean.class);
+//            if (null != setMobileDataEnabledMethod) {
+//                setMobileDataEnabledMethod.invoke(tm, enabled);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

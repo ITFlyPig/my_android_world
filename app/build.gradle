@@ -42,5 +42,6 @@ dependencies {
     implementation project(':uiwidgetmodule')
     implementation project(':common')
     implementation project(':performance')
+    implementation project(path: ':db')
 }
 

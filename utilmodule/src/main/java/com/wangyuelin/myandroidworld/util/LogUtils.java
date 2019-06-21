@@ -559,17 +559,17 @@ public final class LogUtils {
     private static void printDeviceInfo(final String filePath) {
         String versionName = "";
         int versionCode = 0;
-        try {
-            PackageInfo pi = Utils.getApp()
-                    .getPackageManager()
-                    .getPackageInfo(Utils.getApp().getPackageName(), 0);
-            if (pi != null) {
-                versionName = pi.versionName;
-                versionCode = pi.versionCode;
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            PackageInfo pi = Utils.getApp()
+//                    .getPackageManager()
+//                    .getPackageInfo(Utils.getApp().getPackageName(), 0);
+//            if (pi != null) {
+//                versionName = pi.versionName;
+//                versionCode = pi.versionCode;
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
         String time = filePath.substring(filePath.length() - 14, filePath.length() - 4);
         final String head = "************* Log Head ****************" +
                 "\nDate of Log        : " + time +

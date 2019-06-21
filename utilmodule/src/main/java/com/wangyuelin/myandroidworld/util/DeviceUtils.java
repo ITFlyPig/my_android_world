@@ -154,11 +154,11 @@ public final class DeviceUtils {
     @SuppressLint({"HardwareIds", "MissingPermission", "WifiManagerLeak"})
     private static String getMacAddressByWifiInfo() {
         try {
-            WifiManager wifi = (WifiManager) Utils.getApp().getSystemService(Context.WIFI_SERVICE);
-            if (wifi != null) {
-                WifiInfo info = wifi.getConnectionInfo();
-                if (info != null) return info.getMacAddress();
-            }
+//            WifiManager wifi = (WifiManager) Utils.getApp().getSystemService(Context.WIFI_SERVICE);
+//            if (wifi != null) {
+//                WifiInfo info = wifi.getConnectionInfo();
+//                if (info != null) return info.getMacAddress();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

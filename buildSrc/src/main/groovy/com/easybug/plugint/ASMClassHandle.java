@@ -7,6 +7,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 
+import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
+
 /**
  * class字节码插入代码
  */
@@ -29,7 +31,7 @@ public class ASMClassHandle implements IClassHandle {
             return null;
         }
         ClassReader classReader = new ClassReader(classBean.bytes);
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES);
         ClassVisitor classVisitor = new AopClassAdapter(Opcodes.ASM5, classWriter);
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES); //EXPAND_FRAMES
         return classWriter.toByteArray();

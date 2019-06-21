@@ -32,51 +32,22 @@ public class MethodInsertAdapter extends AdviceAdapter {
         this.name = name;
     }
 
-    /**
-     * 开始进入方法
-     */
     @Override
     protected void onMethodEnter() {
         super.onMethodEnter();
-        System.out.println("onMethodEnter：" + name);
-
+        System.out.println("onMethodEnter:" + name);
     }
 
-    /**
-     * 将要退出方法
-     * @param opcode
-     */
     @Override
     protected void onMethodExit(int opcode) {
         super.onMethodExit(opcode);
-        System.out.println("onMethodExit：" + name);
-
-    }
-
-    /**
-     * 访问本地变量，临时存下，onMethodEnter使用
-     * @param name
-     * @param desc
-     * @param signature
-     * @param start
-     * @param end
-     * @param index
-     */
-    @Override
-    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        super.visitLocalVariable(name, desc, signature, start, end, index);
-        final Type[] argTypes = Type.getArgumentTypes(desc);
-        System.out.println("参数的个数：" + argTypes.length + " 参数：" + name + " desc:" + desc + " signature:" + signature);
-    }
-
-    /**
-     * 处理方法的注解
-     * @param desc
-     * @param visible
-     * @return
-     */
-    @Override
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        return super.visitAnnotation(desc, visible);
+        System.out.println("onMethodExit:" + name);
+        Class c = null;
+//        try {
+//            c = Class.forName("android.net.wifi.WifiManager");
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        LogUtil.d("加载类：android.net.wifi.WifiManager 是否成功：" + (c != null));
     }
 }

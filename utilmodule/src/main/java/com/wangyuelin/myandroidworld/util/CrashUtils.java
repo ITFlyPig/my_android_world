@@ -45,78 +45,78 @@ public final class CrashUtils {
     @SuppressLint("SimpleDateFormat")
     private static final Format FORMAT   = new SimpleDateFormat("MM-dd HH-mm-ss");
 
-    private static final UncaughtExceptionHandler DEFAULT_UNCAUGHT_EXCEPTION_HANDLER;
-    private static final UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER;
+//    private static final UncaughtExceptionHandler DEFAULT_UNCAUGHT_EXCEPTION_HANDLER;
+//    private static final UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER;
 
     private static OnCrashListener sOnCrashListener;
 
-    static {
-        try {
-            PackageInfo pi = Utils.getApp()
-                    .getPackageManager()
-                    .getPackageInfo(Utils.getApp().getPackageName(), 0);
-            if (pi != null) {
-                versionName = pi.versionName;
-                versionCode = pi.versionCode;
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        DEFAULT_UNCAUGHT_EXCEPTION_HANDLER = Thread.getDefaultUncaughtExceptionHandler();
-
-        UNCAUGHT_EXCEPTION_HANDLER = new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(final Thread t, final Throwable e) {
-                if (e == null) {
-                    if (DEFAULT_UNCAUGHT_EXCEPTION_HANDLER != null) {
-                        DEFAULT_UNCAUGHT_EXCEPTION_HANDLER.uncaughtException(t, null);
-                    } else {
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(1);
-                    }
-                    return;
-                }
-
-                final String time = FORMAT.format(new Date(System.currentTimeMillis()));
-                final StringBuilder sb = new StringBuilder();
-                final String head = "************* Log Head ****************" +
-                        "\nTime Of Crash      : " + time +
-                        "\nDevice Manufacturer: " + Build.MANUFACTURER +
-                        "\nDevice Model       : " + Build.MODEL +
-                        "\nAndroid Version    : " + Build.VERSION.RELEASE +
-                        "\nAndroid SDK        : " + Build.VERSION.SDK_INT +
-                        "\nApp VersionName    : " + versionName +
-                        "\nApp VersionCode    : " + versionCode +
-                        "\n************* Log Head ****************\n\n";
-                sb.append(head);
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                Throwable cause = e.getCause();
-                while (cause != null) {
-                    cause.printStackTrace(pw);
-                    cause = cause.getCause();
-                }
-                pw.flush();
-                sb.append(sw.toString());
-                final String crashInfo = sb.toString();
-                final String fullPath = (dir == null ? defaultDir : dir) + time + ".txt";
-                if (createOrExistsFile(fullPath)) {
-                    input2File(crashInfo, fullPath);
-                } else {
-                    Log.e("CrashUtils", "create " + fullPath + " failed!");
-                }
-
-                if (sOnCrashListener != null) {
-                    sOnCrashListener.onCrash(crashInfo, e);
-                }
-
-                if (DEFAULT_UNCAUGHT_EXCEPTION_HANDLER != null) {
-                    DEFAULT_UNCAUGHT_EXCEPTION_HANDLER.uncaughtException(t, e);
-                }
-            }
-        };
-    }
+//    static {
+//        try {
+//            PackageInfo pi = Utils.getApp()
+//                    .getPackageManager()
+//                    .getPackageInfo(Utils.getApp().getPackageName(), 0);
+//            if (pi != null) {
+//                versionName = pi.versionName;
+//                versionCode = pi.versionCode;
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        DEFAULT_UNCAUGHT_EXCEPTION_HANDLER = Thread.getDefaultUncaughtExceptionHandler();
+//
+//        UNCAUGHT_EXCEPTION_HANDLER = new UncaughtExceptionHandler() {
+//            @Override
+//            public void uncaughtException(final Thread t, final Throwable e) {
+//                if (e == null) {
+//                    if (DEFAULT_UNCAUGHT_EXCEPTION_HANDLER != null) {
+//                        DEFAULT_UNCAUGHT_EXCEPTION_HANDLER.uncaughtException(t, null);
+//                    } else {
+//                        android.os.Process.killProcess(android.os.Process.myPid());
+//                        System.exit(1);
+//                    }
+//                    return;
+//                }
+//
+//                final String time = FORMAT.format(new Date(System.currentTimeMillis()));
+//                final StringBuilder sb = new StringBuilder();
+//                final String head = "************* Log Head ****************" +
+//                        "\nTime Of Crash      : " + time +
+//                        "\nDevice Manufacturer: " + Build.MANUFACTURER +
+//                        "\nDevice Model       : " + Build.MODEL +
+//                        "\nAndroid Version    : " + Build.VERSION.RELEASE +
+//                        "\nAndroid SDK        : " + Build.VERSION.SDK_INT +
+//                        "\nApp VersionName    : " + versionName +
+//                        "\nApp VersionCode    : " + versionCode +
+//                        "\n************* Log Head ****************\n\n";
+//                sb.append(head);
+//                StringWriter sw = new StringWriter();
+//                PrintWriter pw = new PrintWriter(sw);
+//                e.printStackTrace(pw);
+//                Throwable cause = e.getCause();
+//                while (cause != null) {
+//                    cause.printStackTrace(pw);
+//                    cause = cause.getCause();
+//                }
+//                pw.flush();
+//                sb.append(sw.toString());
+//                final String crashInfo = sb.toString();
+//                final String fullPath = (dir == null ? defaultDir : dir) + time + ".txt";
+//                if (createOrExistsFile(fullPath)) {
+//                    input2File(crashInfo, fullPath);
+//                } else {
+//                    Log.e("CrashUtils", "create " + fullPath + " failed!");
+//                }
+//
+//                if (sOnCrashListener != null) {
+//                    sOnCrashListener.onCrash(crashInfo, e);
+//                }
+//
+//                if (DEFAULT_UNCAUGHT_EXCEPTION_HANDLER != null) {
+//                    DEFAULT_UNCAUGHT_EXCEPTION_HANDLER.uncaughtException(t, e);
+//                }
+//            }
+//        };
+//    }
 
     private CrashUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
@@ -203,7 +203,7 @@ public final class CrashUtils {
             defaultDir = Utils.getApp().getCacheDir() + FILE_SEP + "crash" + FILE_SEP;
         }
         sOnCrashListener = onCrashListener;
-        Thread.setDefaultUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
+//        Thread.setDefaultUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
     }
 
     ///////////////////////////////////////////////////////////////////////////
