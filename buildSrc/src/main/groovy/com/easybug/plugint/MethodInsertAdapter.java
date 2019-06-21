@@ -42,12 +42,5 @@ public class MethodInsertAdapter extends AdviceAdapter {
     protected void onMethodExit(int opcode) {
         super.onMethodExit(opcode);
         System.out.println("onMethodExit:" + name);
-        Class c = null;
-//        try {
-//            c = Class.forName("android.net.wifi.WifiManager");
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        LogUtil.d("加载类：android.net.wifi.WifiManager 是否成功：" + (c != null));
     }
 }
