@@ -357,4 +357,11 @@ public class EasyScrollView extends RelativeLayout {
     public void setPositionChangeListener(ViewPositionListener mPositionChangeListener) {
         this.mPositionChangeListener = mPositionChangeListener;
     }
+
+
+    private void test(String name, int age) {
+        MethodCall.onStart("test", new Object[]{name, age});
+        System.out.println("test");
+    }
 }
+

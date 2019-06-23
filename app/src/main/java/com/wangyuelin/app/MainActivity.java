@@ -28,15 +28,9 @@ public class MainActivity extends Activity {
     }
 
     private boolean test(String name, int age) {
-        MethodCall.onStart("methodname", null);
+        MethodCall.onStart("methodname", new Object[]{name, age});
         System.out.println("name:" + name + " age:" + age);
-        MethodCall.onEnd("methodname");
         return true;
     }
 
-    private void test2() {
-        System.out.println("插入的代码");
-
-        test("wang", 0);
-    }
 }

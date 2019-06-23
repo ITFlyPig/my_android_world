@@ -25,14 +25,14 @@ public class CodeHelper {
      *
      * @param mv
      */
-    public static void putValue(MethodVisitor mv, int arrayIndex, int localVarIndex, Type localVarType) {
+    public static void putValue(MethodVisitor mv, int arrayIndex, int localVarIndex, Type localVarType, boolean isNeedDup) {
         if (mv == null) {
             return;
         }
         mv.visitIntInsn(Opcodes.BIPUSH, arrayIndex);//将数组的索引压入操作数栈
-        mv.visitVarInsn(Opcodes.ALOAD, localVarIndex);//获取本地变量表索引位置的值
-        toReference(mv, localVarType);//确保取出的值是引用类型
+        loadParam(mv, localVarType, localVarIndex);
         mv.visitInsn(Opcodes.AASTORE);//将值存入数组对应位置
+        if (isNeedDup)
         mv.visitInsn(Opcodes.DUP);
     }
 
@@ -41,23 +41,33 @@ public class CodeHelper {
      *
      * @param type
      */
-    public static void toReference(MethodVisitor mv, Type type) {
-        if (type.equals(Type.BOOLEAN_TYPE)) {//布尔类型的参数
+    public static void loadParam(MethodVisitor mv, Type tp, int indexFuncVarInLocalTable) {
+        if (tp.equals(Type.BOOLEAN_TYPE)) {//布尔类型的参数
+            mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);//这里的意思就是将i对应的局部变量加载到栈顶
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-        } else if (type.equals(Type.BYTE_TYPE)) {
+        } else if (tp.equals(Type.BYTE_TYPE)) {
+            mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false);
-        } else if (type.equals(Type.CHAR_TYPE)) {
+        } else if (tp.equals(Type.CHAR_TYPE)) {
+            mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false);
-        } else if (type.equals(Type.SHORT_TYPE)) {
+        } else if (tp.equals(Type.SHORT_TYPE)) {
+            mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;", false);
-        } else if (type.equals(Type.INT_TYPE)) {
+        } else if (tp.equals(Type.INT_TYPE)) {
+            mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-        } else if (type.equals(Type.LONG_TYPE)) {
+        } else if (tp.equals(Type.LONG_TYPE)) {
+            mv.visitVarInsn(Opcodes.LLOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
-        } else if (type.equals(Type.FLOAT_TYPE)) {
+        } else if (tp.equals(Type.FLOAT_TYPE)) {
+            mv.visitVarInsn(Opcodes.FLOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-        } else if (type.equals(Type.DOUBLE_TYPE)) {
+        } else if (tp.equals(Type.DOUBLE_TYPE)) {
+            mv.visitVarInsn(Opcodes.DLOAD, indexFuncVarInLocalTable);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
+        } else {
+            mv.visitVarInsn(Opcodes.ALOAD, indexFuncVarInLocalTable);//加载基本变量表中的值
         }
 
     }
