@@ -46,7 +46,7 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
         ) {
             return mv;
         }
-        return  new MethodInsertAdapter(this.api, mv, access, name, desc);
+        return  new MethodInsertAdapter(this.api, mv, access, name, signature ,desc);
 
     }
 

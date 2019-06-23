@@ -53,7 +53,7 @@ public class AopMethodVisitor extends MethodVisitor implements Opcodes {
         //visitIntInsn 访问一个只有一个int操作数的指令
 
         /**
-         * visitIntInsn:访问只有一个int类型的指令
+         * visitIntInsn:访问只有一个int类型参数的指令
          */
         mv.visitIntInsn(Opcodes.BIPUSH, paramLength);//将一个常量加载到操作数栈：bipush
         /**

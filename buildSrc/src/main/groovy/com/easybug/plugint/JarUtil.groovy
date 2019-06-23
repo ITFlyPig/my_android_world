@@ -10,11 +10,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
 import org.gradle.internal.impldep.com.google.api.client.util.ArrayMap
-import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Label
-import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.*
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -66,7 +62,7 @@ public class JarUtil {
                 LogUtil.e("开始修改的class文件：" + entryName)
 //                def className = entryName.replace(".class", "")
 //                modifiedClassBytes = modifyClasses(className, needPackages)
-                ClassBean bean = new ClassBean(jarFile.path, originClassBytes)
+                ClassBean bean = new ClassBean(entryName, originClassBytes)
                 IClassHandle iClassHandle = new ASMClassHandle(bean)
                 modifiedClassBytes = iClassHandle.insertCode()
             }
@@ -114,9 +110,9 @@ public class JarUtil {
                     LogUtil.e("有方法体，插入start")
 //                ctmethod.insertAfter("System.out.println(\"Aop插入\");")
 
-                    String beforeCode = "com.wangyuelin.performance.MethodCall.onStart(\"" + ctmethod.longName + "\"," + paramCode(getParamNames(ctmethod) ) +");"
+                    String beforeCode = "com.wangyuelin.performance.MethodCall.onStart(\"" + ctmethod.longName + "\"," + paramCode(getParamNames(ctmethod)) + ");"
                     String afterCode = "com.wangyuelin.performance.MethodCall.onEnd(\"" + ctmethod.longName + "\");\n"
-                    LogUtil.e("插入代码：" + afterCode + "\n " + beforeCode )
+                    LogUtil.e("插入代码：" + afterCode + "\n " + beforeCode)
                     ctmethod.insertBefore(beforeCode)
                     ctmethod.insertAfter(afterCode)
                     LogUtil.e("有方法体，插入end")
@@ -223,8 +219,8 @@ public class JarUtil {
         //形参是放在本地方法表的最后的
         String[] paramNames = new String[parameterTypes.length]
         int j = 0
-        for (int i = localParamSize - parameterTypes.length; i <  localParamSize; i++) {
-            paramNames[j] =  attr.variableName(i)//取本地方法表的最后几个参数（也就是形参）
+        for (int i = localParamSize - parameterTypes.length; i < localParamSize; i++) {
+            paramNames[j] = attr.variableName(i)//取本地方法表的最后几个参数（也就是形参）
             j++
         }
         LogUtil.e("获取到的参数：" + paramNames.toString())
