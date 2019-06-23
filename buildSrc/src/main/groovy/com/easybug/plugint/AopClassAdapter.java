@@ -33,7 +33,7 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         //卧槽 这样竟然解决了错误，NB
-        MethodVisitor mv = new TestMethodVisitor(this.api);
+        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         //构造方法、抽象方法和接口中的方法都不处理
         if (name == null
                 || name.equals("")
@@ -41,7 +41,7 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
                 || name.equalsIgnoreCase(CL_INIT)
                 || ((classAccess & Opcodes.ACC_INTERFACE) != 0) //目前访问的类是接口
                 || ((access & Opcodes.ACC_ABSTRACT) != 0)  //目前访问的方法是抽象方法
-                || !className.replaceAll("/", ".").contains("com.wangyuelin.myandroidworld.util") //这里可以定义需要处理的包名
+                || !className.replaceAll("/", ".").contains("com.wangyuelin") //这里可以定义需要处理的包名
             //还需要把系统生成的文件过滤了，如BuildConfig
         ) {
             return mv;
@@ -50,4 +50,9 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
 
     }
 
+    @Override
+    public void visitSource(String source, String debug) {
+        super.visitSource(source, debug);
+        System.out.println(source);
+    }
 }

@@ -18,16 +18,6 @@ public class MethodInsertAdapter extends AdviceAdapter {
     private String methodSignature;//方法的签名
 
 
-    /**
-     * Creates a new {@link AdviceAdapter}.
-     *
-     * @param api    the ASM API version implemented by this visitor. Must be one
-     *               of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
-     * @param mv     the method visitor to which this adapter delegates calls.
-     * @param access the method's access flags (see {@link Opcodes}).
-     * @param name   the method's name.
-     * @param desc   the method's descriptor (see {@link Type Type}).
-     */
     protected MethodInsertAdapter(int api, MethodVisitor mv, int access, String name, String signature, String desc) {
         super(api, mv, access, name, desc);
         params = new ArrayList<>();
@@ -39,24 +29,28 @@ public class MethodInsertAdapter extends AdviceAdapter {
     @Override
     protected void onMethodEnter() {
         System.out.println(methodName + ":onMethodEnter");
-        mv.visitLdcInsn(methodSignature);//将方法的签名加载到操作数栈的栈顶
-        int paramSize = paramTypes.length;
-        if (paramSize == 0) {//没有参数
-            mv.visitInsn(ACONST_NULL);//将null放到操作数栈顶
-        } else {//有参数
-            //1.构造存储参数的Object数组
-            CodeHelper.newObjectArray(mv, paramSize);
-            //2.将参数存到数组对应的位置
-            int localVarIndex = CodeHelper.isStatic(methodAccess) ? 0 : 1;
-            int typeIndex = 0;
-            while (typeIndex < paramSize) {
-                CodeHelper.putValue(mv, typeIndex, localVarIndex, paramTypes[typeIndex]);
-                typeIndex++;
-                localVarIndex++;
-            }
-        }
-        //3.调用方法，将 Object数组/null 传递进去
-        mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;[Ljava/lang/Object;)V", false);
+//        if (methodSignature == null) {
+//            methodSignature = methodName;
+//        }
+//        mv.visitLdcInsn(methodSignature);//将方法的签名加载到操作数栈的栈顶
+//        System.out.println("方法的签名：" + (methodSignature == null ? "null" : methodSignature));
+//        int paramSize = paramTypes.length;
+//        if (paramSize == 0) {//没有参数
+//            mv.visitInsn(ACONST_NULL);//将null放到操作数栈顶
+//        } else {//有参数
+//            //1.构造存储参数的Object数组
+//            CodeHelper.newObjectArray(mv, paramSize);
+//            //2.将参数存到数组对应的位置
+//            int localVarIndex = CodeHelper.isStatic(methodAccess) ? 0 : 1;
+//            int typeIndex = 0;
+//            while (typeIndex < paramSize) {
+//                CodeHelper.putValue(mv, typeIndex, localVarIndex, paramTypes[typeIndex]);
+//                typeIndex++;
+//                localVarIndex++;
+//            }
+//        }
+//        //3.调用方法，将 Object数组/null 传递进去
+//        mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;[Ljava/lang/Object;)V", false);
 
 
     }
@@ -65,8 +59,9 @@ public class MethodInsertAdapter extends AdviceAdapter {
     @Override
     protected void onMethodExit(int opcode) {
         System.out.println(methodName + ":onMethodExit");
-
-
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitLdcInsn("\u63d2\u5165\u7684\u4ee3\u7801");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
     }
 
     @Override

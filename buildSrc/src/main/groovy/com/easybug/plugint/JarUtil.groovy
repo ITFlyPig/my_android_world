@@ -71,7 +71,7 @@ public class JarUtil {
                 LogUtil.e("class文件修改失败")
             } else {
                 jarOutputStream.write(modifiedClassBytes)//使用修改后的字节码
-                LogUtil.e("class文件修改成功")
+                LogUtil.e("class文件修改成功---------------end")
             }
 
 

@@ -11,6 +11,7 @@ import java.io.IOException;
  * 类相关工具
  */
 public class ClassUtil {
+    public static String tempDir;
 
     /**
      * 获取类的名称
@@ -42,6 +43,7 @@ public class ClassUtil {
             return;
         }
 
+        System.out.println("保存到临时文件夹：" + filePath);
         try {
             File file = new File(filePath);
             if (!file.exists()) {

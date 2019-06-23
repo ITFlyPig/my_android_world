@@ -45,6 +45,7 @@ class PreClass extends Transform {
                 input.jarInputs.each {
                     String[] packages = new String[1]
                     packages[0] = "wangyuelin"
+                    ClassUtil.tempDir = context.temporaryDir.path
                     File modifiedFile = MyInject.injectJar(it.file.getAbsolutePath(), context.temporaryDir.path, packages, project)
                     String outputFileName = null
 
@@ -56,8 +57,7 @@ class PreClass extends Transform {
                     }
 
                     def output = outputProvider.getContentLocation(outputFileName, it.contentTypes, it.scopes, Format.JAR)//获得输出的路劲
-                    LogUtil.e("将修改后的从：" + modifiedFile.path)
-                    LogUtil.e("拷贝到：" + output.path)
+                    println "将修改后的jar拷贝到：" + output.path
                     FileUtils.copyFile(modifiedFile, output)
                 }
 //            } catch (Exception e) {

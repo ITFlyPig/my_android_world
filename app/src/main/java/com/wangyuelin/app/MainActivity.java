@@ -33,4 +33,10 @@ public class MainActivity extends Activity {
         MethodCall.onEnd("methodname");
         return true;
     }
+
+    private void test2() {
+        System.out.println("插入的代码");
+
+        test("wang", 0);
+    }
 }
