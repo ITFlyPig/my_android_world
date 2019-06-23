@@ -1,12 +1,9 @@
 package com.easybug.plugint;
 
 import org.apache.http.util.TextUtils;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
-
-import java.util.ArrayList;
 
 /**
  * 方法插入代码before、after、around，都可以通过AdviceAdapter实现
