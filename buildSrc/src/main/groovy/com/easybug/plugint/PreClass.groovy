@@ -40,14 +40,13 @@ class PreClass extends Transform {
             throws IOException, TransformException, InterruptedException {
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each { TransformInput input ->
-//            try {
+            try {
 
                 input.jarInputs.each {
                     String[] packages = new String[1]
                     packages[0] = "wangyuelin"
                     ClassUtil.tempDir = context.temporaryDir.path
                     File modifiedFile = MyInject.injectJar(it.file.getAbsolutePath(), context.temporaryDir.path, packages, project)
-                    String outputFileName = null
 
                     if (modifiedFile != null) {//使用修改后的jar文件
                         outputFileName = modifiedFile.name
@@ -60,22 +59,19 @@ class PreClass extends Transform {
                     println "将修改后的jar拷贝到：" + output.path
                     FileUtils.copyFile(modifiedFile, output)
                 }
-//            } catch (Exception e) {
-//
-//                LogUtil.e( "Preclass 异常" + e.getMessage())
-//            }
+            } catch (Exception e) {
+
+                LogUtil.e( "Preclass 异常" + e.getMessage())
+            }
             //对类型为“文件夹”的input进行遍历
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 //文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等
                 MyInject.injectDir(directoryInput.file.absolutePath, "com", project)
                 // 获取output目录
                 def dest = outputProvider.getContentLocation(directoryInput.name, directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
-
                 // 将input的目录复制到output指定目录
                 FileUtils.copyDirectory(directoryInput.file, dest)
             }
         }
-        JavassistHelper.instance.clearImportedPackages()
-
     }
 }

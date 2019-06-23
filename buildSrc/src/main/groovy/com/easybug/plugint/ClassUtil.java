@@ -57,7 +57,20 @@ public class ClassUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-
+    /**
+     * 对于class文件进行注入，返回注入后的代码
+     * @param classPath
+     * @return
+     */
+    public static byte[] inject(String classPath) {
+        byte[] bytes = FileIOUtils.readFile2BytesByStream(new File(classPath));
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        ClassBean bean = new ClassBean(classPath, bytes);
+        IClassHandle iClassHandle = new ASMClassHandle(bean);
+        return  iClassHandle.insertCode();
     }
 }

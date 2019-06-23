@@ -1,8 +1,11 @@
 package com.easybug.plugint
-import com.wangyuelin.easybug.aop.Util
-import org.gradle.api.Project
 
-import java.util.jar.JarEntry
+
+import org.gradle.api.Project
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
 
 /**
  * 代码的注入
@@ -19,15 +22,21 @@ public class MyInject {
         project.logger.error("输入：" + dirPath)
         if (dir.isDirectory()) {
             dir.eachFileRecurse { File file ->
-                String filePath = file.absolutePath//确保当前文件是class文件，并且不是系统自动生成的class文件
+                def name = file.name
                 if (filePath.endsWith(".class") && !filePath.contains('R$') && !filePath.contains('$')//代理类
                         && !filePath.contains('R.class') && !filePath.contains("BuildConfig.class")) {
-                    project.logger.error(filePath)
-
+                    project.logger.error("需要处理的Class文件：" + file.getAbsolutePath())
+                    byte[] bytes = ClassUtil.inject(file.path)
+                    def classPath = file.parentFile.absolutePath + File.separator + name
+                    FileOutputStream fos = new FileOutputStream(classPath)
+                    fos.write(bytes)
+                    fos.close()
                 }
-
             }
         }
+
+
+
     }
 
     /**
