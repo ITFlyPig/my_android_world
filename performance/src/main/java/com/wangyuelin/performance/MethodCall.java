@@ -2,10 +2,11 @@ package com.wangyuelin.performance;
 
 public class MethodCall {
     public static void onStart(String signature, Object[] args) {
+        System.out.println("onStart" + signature);
     }
 
     public static void onEnd(String signature) {
-        System.out.println("方法被调用：" + signature);
+        System.out.println("onEnd：" + signature);
 
     }
 }

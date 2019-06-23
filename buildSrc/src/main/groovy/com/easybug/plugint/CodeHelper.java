@@ -37,9 +37,10 @@ public class CodeHelper {
     }
 
     /**
-     * 将基本类型转为引用类型,相当于Xxx.valueof()
-     *
-     * @param type
+     * 对于不同类型的局部变量表中的数据，调用对应的命令加载
+     * @param mv
+     * @param tp
+     * @param indexFuncVarInLocalTable
      */
     public static void loadParam(MethodVisitor mv, Type tp, int indexFuncVarInLocalTable) {
         if (tp.equals(Type.BOOLEAN_TYPE)) {//布尔类型的参数

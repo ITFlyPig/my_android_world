@@ -47,8 +47,11 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
 //        ) {
 //            return mv;
 //        }
-        if (className.replaceAll("/", ".").contains("uiwidgetmodule")) {
-            return  new MethodInsertAdapter(this.api, mv, access, name, signature ,desc);
+
+
+        className = className.replaceAll("/", ".");
+        if (className.contains("uiwidgetmodule")) {
+            return  new MethodInsertAdapter(this.api, mv, access, name, signature ,desc, className);
         } else {
             return mv;
         }
