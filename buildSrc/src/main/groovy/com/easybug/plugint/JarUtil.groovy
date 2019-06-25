@@ -1,6 +1,6 @@
 package com.easybug.plugint
 
-import com.easybug.plugint.JavassistHelper
+
 import javassist.CtClass
 import javassist.CtMethod
 import javassist.bytecode.CodeAttribute
@@ -25,12 +25,7 @@ public class JarUtil {
      * @param tempDir 临时文件存放
      * @param project
      */
-    public static File injectJar(File jarFile, String tempDir, Project project, String[] needPackages) {
-
-//        JavassistHelper.instance.appendClassPath(jarFile.path)
-        //加入android.jar，否则找不到android相关的所有类
-//        JavassistHelper.instance.appendClassPath(project.android.bootClasspath[0].toString())
-        LogUtil.e("bootClasspath 路径：" + project.android.bootClasspath[0].toString())
+    public static File injectJar(File jarFile, String tempDir, Project project, AopConfig aopConfig) {
 
         //读取原来的jar
         JarFile originJar = new JarFile(jarFile)
@@ -39,8 +34,8 @@ public class JarUtil {
         String hexName = DigestUtils.md5Hex(jarFile.getAbsolutePath()).substring(0, 8)
         //避免和现有的jar文件重复
         File outputJar = new File(tempDir, hexName + jarFile.getName())
-        LogUtil.e("原来的jar文件：" + jarFile.path)
-        LogUtil.e("修改后的jar文件：" + outputJar)
+        LogUtil.e("injectJar 待修改的jar文件：" + jarFile.path)
+        LogUtil.e("injectJar 修改后的jar文件：" + outputJar)
         JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(outputJar))
 
         //开始遍历jar文件里面的class
@@ -56,22 +51,29 @@ public class JarUtil {
 
             byte[] modifiedClassBytes = null//修改后的class字节码
             byte[] originClassBytes = IOUtils.toByteArray(inputStream)//未修改的class字节码
-
-
-            if (entryName.endsWith(".class")) {//确认是class文件，然后修改
-                LogUtil.e("开始修改的class文件：" + entryName)
-//                def className = entryName.replace(".class", "")
-//                modifiedClassBytes = modifyClasses(className, needPackages)
-                ClassBean bean = new ClassBean(entryName, originClassBytes)
+            boolean needHandle = ClassUtil.needHandle(entryName, aopConfig.needPackages)
+            println "injectJar 开始判断是否需要处理：" + entryName + " ==== " + needHandle
+            ClassBean bean = new ClassBean(entryName, originClassBytes)
+            if (needHandle) {//确认是class文件并且位于需要修改的包下，然后修改
+                LogUtil.e("injectJar 需要处理的Class文件：" + entryName)
                 IClassHandle iClassHandle = new ASMClassHandle(bean)
                 modifiedClassBytes = iClassHandle.insertCode()
             }
             if (modifiedClassBytes == null) {
+                if (!needHandle) {
+                    LogUtil.e("class文件不需要修改")
+                } else {
+                    LogUtil.e("class文件修改失败")
+                }
                 jarOutputStream.write(originClassBytes)//使用未修改的字节码
-                LogUtil.e("class文件修改失败")
             } else {
+                if (needHandle) {
+                    LogUtil.e("class文件修改成功---------------end")
+                    ClassUtil.saveToFile(modifiedClassBytes, ClassUtil.tempDir + File.separator + (bean.path.substring(bean.path.lastIndexOf("/") + 1)))
+                }
                 jarOutputStream.write(modifiedClassBytes)//使用修改后的字节码
-                LogUtil.e("class文件修改成功---------------end")
+
+
             }
 
 

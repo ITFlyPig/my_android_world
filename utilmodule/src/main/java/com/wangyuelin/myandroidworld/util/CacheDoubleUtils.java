@@ -35,9 +35,9 @@ public final class CacheDoubleUtils implements CacheConstants {
      *
      * @return the single {@link CacheDoubleUtils} instance
      */
-    public static CacheDoubleUtils getInstance() {
-        return getInstance(CacheMemoryUtils.getInstance(), CacheDiskUtils.getInstance());
-    }
+//    public static CacheDoubleUtils getInstance() {
+//        return getInstance(CacheMemoryUtils.getInstance(), CacheDiskUtils.getInstance());
+//    }
 
     /**
      * Return the single {@link CacheDoubleUtils} instance.

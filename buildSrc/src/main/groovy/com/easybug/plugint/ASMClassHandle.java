@@ -33,8 +33,6 @@ public class ASMClassHandle implements IClassHandle {
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new AopClassAdapter(Opcodes.ASM5, classWriter);
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES); //EXPAND_FRAMES
-        byte[] bytes = classWriter.toByteArray();
-        ClassUtil.saveToFile(bytes, ClassUtil.tempDir + File.separator + (classBean.path.substring(classBean.path.lastIndexOf("/") + 1)));
-        return bytes;
+        return classWriter.toByteArray();
     }
 }

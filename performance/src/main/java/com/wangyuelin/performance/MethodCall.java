@@ -24,6 +24,14 @@ public class MethodCall {
     }
 
     /**
+     * 没有参数的情况
+     * @param signature
+     */
+    public static void onStart(String signature) {
+        callHelper.recordStart(signature, null);
+    }
+
+    /**
      * 方法的结束会调用
      * @param signature
      */

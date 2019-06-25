@@ -43,6 +43,7 @@ public class CodeHelper {
      * @param indexFuncVarInLocalTable
      */
     public static void loadParam(MethodVisitor mv, Type tp, int indexFuncVarInLocalTable) {
+
         if (tp.equals(Type.BOOLEAN_TYPE)) {//布尔类型的参数
             mv.visitVarInsn(Opcodes.ILOAD, indexFuncVarInLocalTable);//这里的意思就是将i对应的局部变量加载到栈顶
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);

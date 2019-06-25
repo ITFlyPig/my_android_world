@@ -1,6 +1,7 @@
 package com.easybug.plugint;
 
 import org.apache.http.util.TextUtils;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
@@ -20,36 +21,45 @@ public class MethodInsertAdapter extends AdviceAdapter {
 
     @Override
     protected void onMethodEnter() {
+        System.out.println("onMethodEnter");
         if (TextUtils.isEmpty(methodSignature)) {
             return;
         }
         mv.visitLdcInsn(methodSignature);//将方法的签名加载到操作数栈的栈顶
         int paramSize = paramTypes.length;
         if (paramSize == 0) {//没有参数
-            mv.visitInsn(ACONST_NULL);//将null放到操作数栈顶
+            mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;)V", false);
         } else {//有参数
-            //1.构造存储参数的Object数组
-            CodeHelper.newObjectArray(mv, paramSize);
-            //2.将参数存到数组对应的位置
-            int localVarIndex = CodeHelper.isStatic(methodAccess) ? 0 : 1;
-            int typeIndex = 0;
-            while (typeIndex < paramSize) {
-                CodeHelper.putValue(mv, typeIndex, localVarIndex, paramTypes[typeIndex], (typeIndex + 1)  < paramSize);
-                typeIndex++;
-                localVarIndex++;
-            }
+
+//            //1.构造存储参数的Object数组
+//            CodeHelper.newObjectArray(mv, paramSize);
+//            //2.将参数存到数组对应的位置
+//            int localVarIndex = CodeHelper.isStatic(methodAccess) ? 0 : 1;
+//            loadArgArray();
+//            int typeIndex = 0;
+//            while (typeIndex < paramSize) {
+//                CodeHelper.putValue(mv, typeIndex, localVarIndex, paramTypes[typeIndex], true);
+//                typeIndex++;
+//                localVarIndex++;
+//            }
+
+            //创建一个Object数组，将方法的参数放到数组中
+            loadArgArray();
+            //3.调用方法，将 Object数组
+            mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;[Ljava/lang/Object;)V", false);
         }
-        //3.调用方法，将 Object数组/null 传递进去
-        mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;[Ljava/lang/Object;)V", false);
+
     }
 
 
     @Override
     protected void onMethodExit(int opcode) {
+        System.out.println("onMethodExit");
         if (TextUtils.isEmpty(methodSignature)) {
             return;
         }
         mv.visitLdcInsn(methodSignature);
         mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onEnd", "(Ljava/lang/String;)V", false);
     }
+
 }

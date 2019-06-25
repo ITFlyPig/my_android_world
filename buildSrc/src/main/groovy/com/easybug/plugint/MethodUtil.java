@@ -23,7 +23,7 @@ public class MethodUtil {
         }
 
         StringBuilder methodSignature = new StringBuilder();
-        methodSignature.append(className).append("(");
+        methodSignature.append(className).append(".").append(methodName).append("(");
         if (paramsType != null) {
            for (int i = 0; i < paramsType.length; i++) {
                methodSignature.append(paramsType[i].getClassName());
