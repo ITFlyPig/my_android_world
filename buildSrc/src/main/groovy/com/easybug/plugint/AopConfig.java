@@ -3,9 +3,9 @@ package com.easybug.plugint;
 import java.util.List;
 
 public class AopConfig {
-    private List<String> needPackages; // 需要处理的包名
-    private boolean isAop;//表示是否进行代码注入
-    private boolean isDebug;//标志是否输出debug信息
+    List<String> needPackages; // 需要处理的包名
+    boolean isAop;//表示是否进行代码注入
+    boolean isDebug;//标志是否输出debug信息
 
     public List<String> getNeedPackages() {
         return needPackages;
@@ -15,14 +15,14 @@ public class AopConfig {
         return isAop;
     }
 
-    private  AopConfig(Builder builder) {
+    private AopConfig(Builder builder) {
         this.isAop = builder.isAop;
         this.needPackages = builder.needPackages;
         this.isDebug = builder.isDebug;
 
     }
 
-    public static class Builder{
+    public static class Builder {
         private List<String> needPackages; // 需要处理的包名
         private boolean isAop;//表示是否进行代码注入
         private boolean isDebug;

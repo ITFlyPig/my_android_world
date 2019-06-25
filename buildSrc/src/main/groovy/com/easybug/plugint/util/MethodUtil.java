@@ -7,7 +7,7 @@ public class MethodUtil {
 
     /**
      *获得方法的签名，类似于com.xxx.xxx.xx.Method(int, String)
-     * @param className  类似于 com.xxx.xxx.xx.Test.class
+     * @param className  类似于 com.xxx.xxx.xx.AopPluginExtension.class
      * @param methodName
      * @param paramsType
      * @return

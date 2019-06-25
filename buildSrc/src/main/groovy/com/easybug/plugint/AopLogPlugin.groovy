@@ -19,11 +19,30 @@ class AopLogPlugin implements Plugin<Project> {
 //        def android = project.extensions.findByType(AppExtension.class)
 //        android.registerTransform(new PreClass(project))
 
-        project.android.registerTransform(new PreClass(project))
+        AopConfig aopConfig = getConfig(project)
+
+        println "aopConfig.isDebug:" +  aopConfig.isDebug
+        project.android.registerTransform(new PreClass(aopConfig, project))
 
     }
 
     private void init(Project project) {
         LogUtil.init(project)
+
     }
+
+    private AopConfig getConfig(Project project) {
+        if (project == null) {
+            return
+        }
+
+        AopExtension aopExtension = project.extensions.create("Aop", AopExtension)
+        AopConfig aopConfig = new AopConfig.Builder()
+                .setDebug(aopExtension.isDebug)
+                .setAop(aopExtension.isAop)
+                .build()
+        return aopConfig
+
+    }
+
 }

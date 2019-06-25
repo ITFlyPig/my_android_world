@@ -10,7 +10,13 @@ import org.gradle.api.Project
 
 class PreClass extends Transform {
 
+    AopConfig aopConfig
     Project project
+
+    PreClass(AopConfig aopConfig, Project project) {
+        this.aopConfig = aopConfig
+        this.project = project
+    }
 
     PreClass(Project project) {
         this.project = project
@@ -45,12 +51,6 @@ class PreClass extends Transform {
         ArrayList<String> needPackages = new ArrayList<>();
         needPackages.add("wangyuelin")
 
-        AopConfig aopConfig = new AopConfig.Builder()
-                .setAop(true)
-                .setNeedPages(needPackages)
-                .setDebug(true)
-                .build()
-
         inputs.each { TransformInput input ->
             try {
 
@@ -84,4 +84,6 @@ class PreClass extends Transform {
             }
         }
     }
+
+
 }
