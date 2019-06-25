@@ -1,4 +1,4 @@
-package com.easybug.plugint;
+package com.easybug.plugint.util;
 
 import org.apache.http.util.TextUtils;
 import org.objectweb.asm.Type;

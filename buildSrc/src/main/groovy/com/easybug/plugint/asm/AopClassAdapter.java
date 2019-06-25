@@ -1,6 +1,4 @@
-package com.easybug.plugint;
-
-import com.wangyuelin.easybug.aop.Util;
+package com.easybug.plugint.asm;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -27,7 +25,7 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         className = name;//类名称
-        classAccess = access;
+        classAccess = access;//类的访问标志
     }
 
     @Override
@@ -35,10 +33,8 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
         //卧槽 这样竟然解决了错误，NB
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         //构造方法、抽象方法和接口中的方法都不处理
-
         if (name == null
                 || name.equals("")
-                || name.equals(constructorName)
                 || name.equalsIgnoreCase(CL_INIT)
                 || ((classAccess & Opcodes.ACC_INTERFACE) != 0) //目前访问的类是接口
                 || ((access & Opcodes.ACC_ABSTRACT) != 0)  //目前访问的方法是抽象方法
@@ -48,11 +44,5 @@ public class AopClassAdapter extends ClassVisitor implements Opcodes {
         }
         className = className.replaceAll("/", ".");
         return new MethodInsertAdapter(this.api, mv, access, name, signature ,desc, className);
-    }
-
-    @Override
-    public void visitSource(String source, String debug) {
-        super.visitSource(source, debug);
-        System.out.println(source);
     }
 }

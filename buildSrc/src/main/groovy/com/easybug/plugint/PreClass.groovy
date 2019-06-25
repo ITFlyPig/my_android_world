@@ -1,6 +1,9 @@
 package com.easybug.plugint
 
 import com.android.build.api.transform.*
+import com.easybug.plugint.inject.MyInject
+import com.easybug.plugint.util.ClassUtil
+import com.easybug.plugint.util.LogUtil
 import com.google.common.collect.Sets
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
@@ -40,54 +43,20 @@ class PreClass extends Transform {
             throws IOException, TransformException, InterruptedException {
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         ArrayList<String> needPackages = new ArrayList<>();
-        needPackages.add("CacheConstants")
-        needPackages.add("MemoryConstants")
-        needPackages.add("PermissionConstants")
-        needPackages.add("RegexConstants")
-        needPackages.add("TimeConstants")
+        needPackages.add("wangyuelin")
 
-        needPackages.add("ActivityUtils")
-        needPackages.add("AdaptScreenUtils")
-        needPackages.add("AntiShakeUtils")
-        needPackages.add("AppUtils")
-        needPackages.add("BarUtils")
-
-
-
-        needPackages.add("BusUtils")
-        needPackages.add("CacheDiskUtils")
-
-        needPackages.add("MainActivity")
-
-
-
-
-
-//        needPackages.add("CacheDoubleUtils")
-//        needPackages.add("CacheMemoryUtils")
-//        needPackages.add("CleanUtils")
-//        needPackages.add("CloseUtils")
-//        needPackages.add("ConvertUtils")
-//        needPackages.add("CrashUtils")
-//        needPackages.add("DeviceUtils")
-//        needPackages.add("EncodeUtils")
-//        needPackages.add("EncryptUtils")
-//        needPackages.add("FileIOUtils")
-//        needPackages.add("FileUtils")
-//        needPackages.add("FragmentUtils")
-//        needPackages.add("GsonUtils")
-//        needPackages.add("ImageUtils")
         AopConfig aopConfig = new AopConfig.Builder()
                 .setAop(true)
                 .setNeedPages(needPackages)
+                .setDebug(true)
                 .build()
 
         inputs.each { TransformInput input ->
-//            try {
+            try {
 
                 input.jarInputs.each {
                     ClassUtil.tempDir = context.temporaryDir.path
-                    LogUtil.e("transform jar:" + it.file.getAbsolutePath())
+                    LogUtil.d("transform jar:" + it.file.getAbsolutePath())
                     File modifiedFile = MyInject.injectJar(it.file.getAbsolutePath(), context.temporaryDir.path, aopConfig, project)
                     String outputFileName
                     if (modifiedFile != null) {//使用修改后的jar文件
@@ -98,13 +67,12 @@ class PreClass extends Transform {
                     }
 
                     def output = outputProvider.getContentLocation(outputFileName, it.contentTypes, it.scopes, Format.JAR)//获得输出的路劲
-                    println "将修改后的jar拷贝到：" + output.path
+                    LogUtil.d("将修改后的jar拷贝到：" + output.path)
                     FileUtils.copyFile(modifiedFile, output)
                 }
-//            } catch (Exception e) {
-//
-//                LogUtil.e( "Preclass 异常" + e.getMessage())
-//            }
+            } catch (Exception e) {
+                LogUtil.e( "Preclass 异常" + e.getMessage())
+            }
             //对类型为“文件夹”的input进行遍历
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 //文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等

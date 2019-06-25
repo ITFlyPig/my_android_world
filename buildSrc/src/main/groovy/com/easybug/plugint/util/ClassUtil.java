@@ -1,4 +1,9 @@
-package com.easybug.plugint;
+package com.easybug.plugint.util;
+
+import com.easybug.plugint.inject.ASMClassHandle;
+import com.easybug.plugint.bean.ClassBean;
+import com.easybug.plugint.inject.IClassHandle;
+import com.easybug.plugint.util.LogUtil;
 
 import org.apache.http.util.TextUtils;
 
@@ -13,27 +18,6 @@ import java.util.List;
  */
 public class ClassUtil {
     public static String tempDir;
-
-    /**
-     * 获取类的名称
-     *
-     * @param fullName
-     * @return
-     */
-    public static String getName(String fullName) {
-        return "";
-    }
-
-    /**
-     * 获取类的包
-     *
-     * @param fullName
-     * @return
-     */
-    public static String getPackage(String fullName) {
-        return "";
-    }
-
     /**
      * 将字节数组写到class文件
      * @param bytes
@@ -43,8 +27,7 @@ public class ClassUtil {
         if (bytes == null || bytes.length == 0 || TextUtils.isEmpty(filePath)) {
             return;
         }
-
-        System.out.println("保存到临时文件夹：" + filePath);
+        LogUtil.d("将class保存到临时文件夹：" + filePath);
         try {
             File file = new File(filePath);
             if (!file.exists()) {

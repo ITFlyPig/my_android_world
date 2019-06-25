@@ -94,9 +94,9 @@ public final class CacheDiskUtils implements CacheConstants {
      * @param maxCount The max count of cache.
      * @return the single {@link CacheDiskUtils} instance
      */
-//    public static CacheDiskUtils getInstance(final long maxSize, final int maxCount) {
-//        return getInstance("wang", maxSize, maxCount);
-//    }
+    public static CacheDiskUtils getInstance(final long maxSize, final int maxCount) {
+        return getInstance("", maxSize, maxCount);
+    }
 
     /**
      * Return the single {@link CacheDiskUtils} instance.
@@ -107,11 +107,11 @@ public final class CacheDiskUtils implements CacheConstants {
      * @param maxCount  The max count of cache.
      * @return the single {@link CacheDiskUtils} instance
      */
-//    public static CacheDiskUtils getInstance(String cacheName, final long maxSize, final int maxCount) {
-//        if (isSpace(cacheName)) cacheName = "cacheUtils";
-//        File file = new File(Utils.getApp().getCacheDir(), cacheName);
-//        return getInstance(file, maxSize, maxCount);
-//    }
+    public static CacheDiskUtils getInstance(String cacheName, final long maxSize, final int maxCount) {
+        if (isSpace(cacheName)) cacheName = "cacheUtils";
+        File file = new File(Utils.getApp().getCacheDir(), cacheName);
+        return getInstance(file, maxSize, maxCount);
+    }
 
     /**
      * Return the single {@link CacheDiskUtils} instance.
@@ -121,9 +121,9 @@ public final class CacheDiskUtils implements CacheConstants {
      * @param cacheDir The directory of cache.
      * @return the single {@link CacheDiskUtils} instance
      */
-//    public static CacheDiskUtils getInstance(@NonNull final File cacheDir) {
-//        return getInstance(cacheDir, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
-//    }
+    public static CacheDiskUtils getInstance(@NonNull final File cacheDir) {
+        return getInstance(cacheDir, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
+    }
 
     /**
      * Return the single {@link CacheDiskUtils} instance.
@@ -174,7 +174,6 @@ public final class CacheDiskUtils implements CacheConstants {
     public String toString() {
         return mCacheKey + "@" + Integer.toHexString(hashCode());
     }
-
 
     ///////////////////////////////////////////////////////////////////////////
     // about bytes

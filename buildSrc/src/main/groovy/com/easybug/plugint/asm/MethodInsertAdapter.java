@@ -1,7 +1,8 @@
-package com.easybug.plugint;
+package com.easybug.plugint.asm;
+
+import com.easybug.plugint.util.MethodUtil;
 
 import org.apache.http.util.TextUtils;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
@@ -21,7 +22,6 @@ public class MethodInsertAdapter extends AdviceAdapter {
 
     @Override
     protected void onMethodEnter() {
-        System.out.println("onMethodEnter");
         if (TextUtils.isEmpty(methodSignature)) {
             return;
         }
@@ -30,19 +30,6 @@ public class MethodInsertAdapter extends AdviceAdapter {
         if (paramSize == 0) {//没有参数
             mv.visitMethodInsn(INVOKESTATIC, "com/wangyuelin/performance/MethodCall", "onStart", "(Ljava/lang/String;)V", false);
         } else {//有参数
-
-//            //1.构造存储参数的Object数组
-//            CodeHelper.newObjectArray(mv, paramSize);
-//            //2.将参数存到数组对应的位置
-//            int localVarIndex = CodeHelper.isStatic(methodAccess) ? 0 : 1;
-//            loadArgArray();
-//            int typeIndex = 0;
-//            while (typeIndex < paramSize) {
-//                CodeHelper.putValue(mv, typeIndex, localVarIndex, paramTypes[typeIndex], true);
-//                typeIndex++;
-//                localVarIndex++;
-//            }
-
             //创建一个Object数组，将方法的参数放到数组中
             loadArgArray();
             //3.调用方法，将 Object数组
@@ -54,7 +41,6 @@ public class MethodInsertAdapter extends AdviceAdapter {
 
     @Override
     protected void onMethodExit(int opcode) {
-        System.out.println("onMethodExit");
         if (TextUtils.isEmpty(methodSignature)) {
             return;
         }

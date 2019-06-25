@@ -1,4 +1,4 @@
-package com.easybug.plugint;
+package com.easybug.plugint.util;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

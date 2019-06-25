@@ -1,4 +1,4 @@
-package com.easybug.plugint;
+package com.easybug.plugint.bean;
 
 public class VarBean {
     public int index;//参数的索引

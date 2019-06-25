@@ -1,4 +1,4 @@
-package com.easybug.plugint;
+package com.easybug.plugint.bean;
 
 /**
  * 表示编译后的class文件

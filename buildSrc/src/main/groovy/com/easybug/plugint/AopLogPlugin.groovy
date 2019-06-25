@@ -1,6 +1,7 @@
 package com.easybug.plugint
 
-import com.easybug.plugint.PreClass
+
+import com.easybug.plugint.util.LogUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
