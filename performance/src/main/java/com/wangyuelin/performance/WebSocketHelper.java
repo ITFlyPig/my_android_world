@@ -36,14 +36,12 @@ public class WebSocketHelper {
         try {
             mWebSocket = new WebSocketFactory()
                     .setConnectionTimeout(3000)
-                    .createSocket("ws://172.16.128.162:8080/websocket/" + sid)
+                    .createSocket("ws://172.16.128.168:8080/websocket/" + sid)
                     .setFrameQueueSize(10)
                     .setMissingCloseFrameAllowed(false)
                     .addListener(webSocketListener)
-                    .connect();
+                    .connectAsynchronously();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (WebSocketException e) {
             e.printStackTrace();
         }
 

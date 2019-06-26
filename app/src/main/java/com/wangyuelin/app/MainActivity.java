@@ -5,7 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.wangyuelin.myandroidworld.util.LogUtil;
 import com.wangyuelin.performance.MethodCall;
+import com.wangyuelin.performance.WebSocketHelper;
+import com.wangyuelin.performance.show.MethodQueue;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends Activity {
@@ -23,6 +29,17 @@ public class MainActivity extends Activity {
 
             }
         });
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                String json = "{\"classC\":\"com.talk51.ushare.ShareManager.initShareParams(android.content\",\"endTIme\":1561485952401,\"signature\":\"com.talk51.ushare.ShareManager.initShareParams(android.content.Context)\",\"startTime\":1561485952351,\"totalTime\":50}";
+                WebSocketHelper.getInstance().send(json);
+            }
+        }, 1000, 4000);
+
+
+
 
     }
 

@@ -334,7 +334,7 @@ public class PerformanceView extends View {
            public void run() {
                LogUtil.d("检查是否有需要绘制的");
                if (MethodQueue.waits.size() > 0) {
-                   invalidate();
+                   post(() -> invalidate());
                }
            }
        }, 1000, 2000);
