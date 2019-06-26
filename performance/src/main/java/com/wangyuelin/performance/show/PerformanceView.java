@@ -153,7 +153,8 @@ public class PerformanceView extends View {
         while (it.hasNext()) {
             CallDrawItem next = it.next();
             if (nextY >= ScreenUtils.getScreenHeight()) {
-                MethodQueue.methods.remove(next);//超出屏幕的边界，直接删除
+//                MethodQueue.methods.remove(next);//超出屏幕的边界，直接删除
+                it.remove();
             }
             layout(next, nextY, nextX);
             nextY += (next.h + ConvertUtils.dp2px(5));//得加上代码片段之间的间隔
@@ -184,7 +185,8 @@ public class PerformanceView extends View {
         mPaint.setColor(item.color);
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
-        drawRightTop(getName(item.signature), item.pos, canvas);
+        Log.d("wdd", "drawRightTop绘制文字：" + getName(item) + " 类：" + item.classC);
+        drawRightTop(getName(item), item.pos, canvas);
 
         //绘制孩子
         if (item.childs != null) {
@@ -226,17 +228,6 @@ public class PerformanceView extends View {
     }
 
     /**
-     * 产生随机数
-     *
-     * @param min
-     * @param max
-     * @return
-     */
-    private int random(int min, int max) {
-        return new Random().nextInt(max - min) + min;
-    }
-
-    /**
      * 产生随机的颜色
      *
      * @return
@@ -258,6 +249,7 @@ public class PerformanceView extends View {
         if (TextUtils.isEmpty(methodName) || rect == null) {
             return;
         }
+
         mPaint.setColor(Color.BLACK);
         Rect temp = new Rect();
         mPaint.getTextBounds(methodName, 0, methodName.length(), temp);
@@ -278,19 +270,21 @@ public class PerformanceView extends View {
     }
 
     /**
-     * 据签名获得方法的名称
-     * @param signature
+     * 获取名称 格式：类.方法
+     * @param item
      * @return
      */
-    private String getName(String signature) {
-        if (TextUtils.isEmpty(signature)) {
+    private String getName(CallDrawItem item) {
+        if (item == null) {
             return "";
         }
-        int index = signature.lastIndexOf(".");
-        if (index <= 0) {
-            return "";
+        if (item.className == null) {
+            item.className = "";
         }
-        return signature.substring(index + 1);
+        if (item.methodName == null) {
+            item.methodName = "";
+        }
+        return item.className + "." + item.methodName;
     }
 
 

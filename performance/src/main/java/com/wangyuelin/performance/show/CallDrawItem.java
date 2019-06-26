@@ -6,10 +6,12 @@ import java.util.List;
 
 public class CallDrawItem  {
     public String signature;//方法的签名
+    public String methodName;//方法的名称
     public long totalTime;//花费的时间
     public long startTime;//开始调用时的时间
     public long endTIme;//结束时的事件
     public String classC;//所属的Class
+    public String className;//类的名称
     public Object[] args;//方法的参数
     public List<CallDrawItem> childs;//被调用的子方法
     public CallDrawItem parent;//父调用
