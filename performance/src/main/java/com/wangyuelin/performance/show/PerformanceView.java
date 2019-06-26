@@ -39,7 +39,7 @@ public class PerformanceView extends View {
 
     private int baseLine;//绘制的基线
     private int methodCutPointSpace = ConvertUtils.dp2px(5);//代码片段之间的间隔
-    private long aniTime = 4000;//动画的时间
+    private long aniTime = 400;//动画的时间
     private long distancePerFrame;
     private int curColorIndex;//颜色的索引
     private boolean isPause = false;//是否暂停
@@ -66,35 +66,6 @@ public class PerformanceView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
         scaleW = 0.3f;//即一毫秒对应的像素
-
-//        final Handler handler = new Handler(){
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                LogUtil.d("开始添加绘制");
-//                MethodQueue.waits.add(MethodQueue.getTest());
-//                LogUtil.d("添加完成");
-//                invalidate();
-//            }
-//        };
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                handler.sendEmptyMessage(100);
-//            }
-//        }, 300);
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                handler.sendEmptyMessage(100);
-//            }
-//        }, 100);
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                handler.sendEmptyMessage(100);
-//            }
-//        }, 700);
 
         startLoop();
         handlePause();
@@ -186,14 +157,35 @@ public class PerformanceView extends View {
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
         Log.d("wdd", "drawRightTop绘制文字：" + getName(item) + " 类：" + item.classC);
-        drawRightTop(getName(item), item.pos, canvas);
+
+        if (isDrawSelfText(item)) {
+            drawRightTop(getName(item), item.pos, canvas);
+        }
 
         //绘制孩子
-        if (item.childs != null) {
-            for (CallDrawItem child : item.childs) {
-                draw(child, canvas);
+        if (item.childs != null && item.totalTime > 0) {
+            for (int i = 0; i < item.childs.size(); i++) {
+                draw(item.childs.get(i), canvas);
             }
         }
+
+    }
+
+    /**
+     * 判断是否绘制子的文字，主要是解决文字重叠的问题
+     * @param item
+     * @return
+     */
+    private boolean isDrawSelfText(CallDrawItem item) {
+        if (item == null || item.childs == null || item.childs.size() == 0) {
+            return true;
+        }
+        int space = ConvertUtils.dp2px(3);
+        if ( CallDrawUtil.getW(item.totalTime, scaleW) > space
+                && item.pos.right - item.childs.get(0).pos.right < space) {//第一个孩子的右边和自己的右边的距离
+            return false;
+        }
+        return true;
 
     }
 

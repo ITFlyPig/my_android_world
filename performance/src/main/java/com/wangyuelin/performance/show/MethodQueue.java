@@ -23,8 +23,11 @@ public class MethodQueue {
             @Override
             public void onMessage(String msg) {
                 CallDrawItem callBean =  JSON.parseObject(msg, CallDrawItem.class);
-                waits.add(callBean);
-                LogUtil.d("将Socket下发的数据添加到waits中");
+                if (callBean.totalTime > 0) {//过滤掉执行时间为0的代码块，因为0的执行时间不影响性能
+                    waits.add(callBean);
+                    LogUtil.d("将Socket下发的数据添加到waits中");
+                }
+
             }
         });
 
