@@ -75,7 +75,6 @@ public class EasyScrollView extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDragHelper.processTouchEvent(event);
-        CoordinatorLayout coordinatorLayout;
         return true;
     }
 

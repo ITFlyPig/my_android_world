@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -41,6 +42,8 @@ public class PerformanceView extends View {
     private int curColorIndex;//颜色的索引
     private boolean isPause = false;//是否暂停
 
+    private GestureDetector mGestureDetector;
+
     public PerformanceView(Context context) {
         this(context, null);
     }
@@ -66,7 +69,14 @@ public class PerformanceView extends View {
         scaleW = 0.3f;//即一毫秒对应的像素
 
         startLoop();
-        handlePause();
+
+        mGestureDetector = new GestureDetector(getContext(), new MyGestureListener());
+
+
+        setOnTouchListener((v, event) -> {
+            mGestureDetector.onTouchEvent(event);
+            return true;
+        });
     }
 
     @Override
@@ -310,19 +320,48 @@ public class PerformanceView extends View {
         }, 1000, 2000);
     }
 
-    /**
-     * 处理暂停
-     */
-    private void handlePause() {
-        setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+    private long lastDwon;
+    private class  MyGestureListener extends GestureDetector.SimpleOnGestureListener{
 
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            System.out.println("onDown :" + (System.currentTimeMillis() - lastDwon));
+            if (System.currentTimeMillis() - lastDwon < 250) {
+
+            } else {
                 isPause = true;
-                return true;
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                isPause = false;
             }
+
+            lastDwon = System.currentTimeMillis();
             return false;
-        });
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+//            isPause = true;
+            return super.onSingleTapConfirmed(e);
+        }
+
+        //继续滑动
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            System.out.println("onDoubleTap");
+            isPause = false;
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            System.out.println("onScroll");
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            System.out.println("onFling");
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
     }
+
 }
