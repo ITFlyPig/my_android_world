@@ -5,8 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -19,7 +17,6 @@ import com.wangyuelin.myandroidworld.util.LogUtil;
 import com.wangyuelin.myandroidworld.util.ScreenUtils;
 
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,9 +56,10 @@ public class PerformanceView extends View {
 
     private void init() {
         methodH = ConvertUtils.dp2px(30);
-        colors = new int[]{Color.parseColor("#ADD8E6"), Color.parseColor("#00BFFF"), Color.parseColor("#87CEEB"),
-                Color.parseColor("#87CEFA"), Color.parseColor("#4682B4"), Color.parseColor("#4B0082"), Color.parseColor("#20B2AA"),
-                Color.parseColor("#228B22"), Color.parseColor("#EEE8AA"), Color.parseColor("#FFDEAD"), Color.parseColor("#FF4500")};
+        colors = new int[]{Color.parseColor("#8B008B"), Color.parseColor("#4B0082"), Color.parseColor("#483D8B"),
+                Color.parseColor("#0000FF"), Color.parseColor("#191970"), Color.parseColor("#778899"), Color.parseColor("#00CED1")
+                ,Color.parseColor("#2E8B57"), Color.parseColor("#808000"), Color.parseColor("#DAA520"), Color.parseColor("#FF8C00")
+                ,Color.parseColor("#8B4513"), Color.parseColor("#FF4500"), Color.parseColor("#696969"), Color.parseColor("#800000")};
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
@@ -79,15 +77,15 @@ public class PerformanceView extends View {
             CallDrawItem waitItem = MethodQueue.getWait();
             if (waitItem != null) {
                 MethodQueue.methods.add(0, waitItem);
-                LogUtil.d("tt","将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine );
+                LogUtil.d("tt", "将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine);
                 baseLine -= (waitItem.h + methodCutPointSpace);
                 distancePerFrame = getDistancePerFrame(Math.abs(baseLine), aniTime);
-                LogUtil.d("tt","更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
+                LogUtil.d("tt", "更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
             }
             baseLine += distancePerFrame;
         }
 
-        LogUtil.d("tt","onDraw的基线：" + baseLine);
+        LogUtil.d("tt", "onDraw的基线：" + baseLine);
         if (baseLine < 0) {
             invalidate();
         } else if (baseLine > 0) {
@@ -103,7 +101,7 @@ public class PerformanceView extends View {
         }
         //计算缩放的比例
         if (maxW > 0) {
-            scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(50))/ (float)maxW;
+            scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(50)) / (float) maxW;
 
             //测试
             scaleW = 5;
@@ -157,11 +155,7 @@ public class PerformanceView extends View {
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
         Log.d("wdd", "drawRightTop绘制文字：" + getName(item) + " 类：" + item.classC);
-
-        if (isDrawSelfText(item)) {
-            drawRightTop(getName(item), item.pos, canvas);
-        }
-
+        item.textPos = drawRightTop(item, canvas);
         //绘制孩子
         if (item.childs != null && item.totalTime > 0) {
             for (int i = 0; i < item.childs.size(); i++) {
@@ -170,27 +164,6 @@ public class PerformanceView extends View {
         }
 
     }
-
-    /**
-     * 判断是否绘制子的文字，主要是解决文字重叠的问题
-     * @param item
-     * @return
-     */
-    private boolean isDrawSelfText(CallDrawItem item) {
-        if (item == null || item.childs == null || item.childs.size() == 0) {
-            return true;
-        }
-        int space = ConvertUtils.dp2px(3);
-        if ( CallDrawUtil.getW(item.totalTime, scaleW) > space
-                && item.pos.right - item.childs.get(0).pos.right < space) {//第一个孩子的右边和自己的右边的距离
-            return false;
-        }
-        return true;
-
-    }
-
-
-
 
     /**
      * 更新每个元素的绘制位置
@@ -235,11 +208,13 @@ public class PerformanceView extends View {
 
     /**
      * 将文字绘制到右上角
-     * @param methodName
+     *
      */
-    private void drawRightTop(String methodName, Rect rect, Canvas canvas) {
+    private Rect drawRightTop(CallDrawItem item, Canvas canvas) {
+        String methodName = getName(item);
+        Rect rect = item.pos;
         if (TextUtils.isEmpty(methodName) || rect == null) {
-            return;
+            return null;
         }
 
         mPaint.setColor(Color.BLACK);
@@ -247,22 +222,29 @@ public class PerformanceView extends View {
         mPaint.getTextBounds(methodName, 0, methodName.length(), temp);
         int w = temp.width();
         int h = temp.height();
-        float x = 0;
-        float y = 0;
-        if (rect.width() < w) {//绘制到外面
-            y = rect.top + h;
-            x = rect.left;
 
-        } else {
-            x = rect.right - w;
-            y = rect.top + h;
+        float x = rect.right;
+        float y = rect.top + h;
+
+        //开始调整自己的文字位置，避免和父文字得位置重叠
+        if (item.parent != null && item.parent.textPos != null) {
+            Rect parentTextPos = item.parent.textPos;
+            if (x + w > parentTextPos.left && y - h < parentTextPos.bottom) {//自己的text和父text有重叠，调整
+                //调整到父text的下面
+                y  = parentTextPos.bottom + h;
+            }
         }
 
+        mPaint.setColor(item.color);
         canvas.drawText(methodName, x, y, mPaint);
+
+        //记录文字的位置
+        return new Rect((int) x, (int) (y - temp.height()), (int) (x + temp.width()), (int) y);
     }
 
     /**
      * 获取名称 格式：类.方法
+     *
      * @param item
      * @return
      */
@@ -287,6 +269,7 @@ public class PerformanceView extends View {
 
     /**
      * 获取宽度
+     *
      * @param item
      * @return
      */
@@ -294,13 +277,14 @@ public class PerformanceView extends View {
         if (item == null) {
             return 0;
         }
-        return  (int) item.totalTime;
+        return (int) item.totalTime;
     }
 
     /**
      * 据距离和时间或者每一帧应该移动的距离
-     * @param distance  距离
-     * @param duration  时间
+     *
+     * @param distance 距离
+     * @param duration 时间
      * @return
      */
     private int getDistancePerFrame(int distance, long duration) {
@@ -315,33 +299,30 @@ public class PerformanceView extends View {
     }
 
     private void startLoop() {
-       new Timer().scheduleAtFixedRate(new TimerTask() {
-           @Override
-           public void run() {
-               LogUtil.d("检查是否有需要绘制的");
-               if (MethodQueue.waits.size() > 0) {
-                   post(() -> invalidate());
-               }
-           }
-       }, 1000, 2000);
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                LogUtil.d("检查是否有需要绘制的");
+                if (MethodQueue.waits.size() > 0) {
+                    post(() -> invalidate());
+                }
+            }
+        }, 1000, 2000);
     }
 
     /**
      * 处理暂停
      */
     private void handlePause() {
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-                    isPause = true;
-                    return true;
-                } else if (event.getAction() == MotionEvent.ACTION_UP){
-                    isPause = false;
-                }
-                return false;
+                isPause = true;
+                return true;
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                isPause = false;
             }
+            return false;
         });
     }
 }

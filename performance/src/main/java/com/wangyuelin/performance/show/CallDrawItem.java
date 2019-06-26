@@ -19,6 +19,7 @@ public class CallDrawItem  {
     public int w;//柱状图的宽度
     public int h;//柱状图的高度
     public Rect pos;//绘制的柱状图的位置
+    public Rect textPos;//文字的绘制位置
     public int color;//绘制的颜色
 
     public CallDrawItem() {
