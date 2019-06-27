@@ -21,12 +21,12 @@ public class CallDrawUtil {
         if (item == null) {
             return;
         }
-        LogUtil.d("开始测量方法：" + item.signature);
+//        LogUtil.d("开始测量方法：" + item.signature);
         item.w = getW(item.totalTime, scaleW);
         if (item.childs == null || item.childs.size() == 0 || item.totalTime == 0) {//没有子调用,或者时间为0，直接知道高度和宽度
             item.h = methodH;
-            LogUtil.d("方法：" + item.signature + " 时间：" + item.totalTime + " 宽度：" + item.w);
-            LogUtil.d("没有孩子，直接测量： w:" + item.w + " h:" + item.h);
+//            LogUtil.d("方法：" + item.signature + " 时间：" + item.totalTime + " 宽度：" + item.w);
+//            LogUtil.d("没有孩子，直接测量： w:" + item.w + " h:" + item.h);
             return;
         }
 
@@ -37,7 +37,7 @@ public class CallDrawUtil {
         }
         item.h = totalH;
 
-        LogUtil.d("有孩子，测量得到： w:" + item.w + " h:" + item.h);
+//        LogUtil.d("有孩子，测量得到： w:" + item.w + " h:" + item.h);
 
     }
 }

@@ -40,9 +40,10 @@ public class PerformanceView extends View {
     private long aniTime = 400;//动画的时间
     private long distancePerFrame;
     private int curColorIndex;//颜色的索引
-    private boolean isPause = false;//是否暂停
-
+    private boolean isAutoScrollPause = false;//是否自动股滚动的标志
     private GestureDetector mGestureDetector;
+    private FlingHelper flingHelper;
+    private boolean isFling;
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -66,7 +67,7 @@ public class PerformanceView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
-        scaleW = 0.3f;//即一毫秒对应的像素
+//        scaleW = 0.3f;//即一毫秒对应的像素
 
         startLoop();
 
@@ -77,31 +78,39 @@ public class PerformanceView extends View {
             mGestureDetector.onTouchEvent(event);
             return true;
         });
+
+        flingHelper = new FlingHelper(getContext(), flingListener);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //检查是否有需要绘制的
-        if (!isPause) {
+        if (!isAutoScrollPause) {
             CallDrawItem waitItem = MethodQueue.getWait();
             if (waitItem != null) {
                 MethodQueue.methods.add(0, waitItem);
-                LogUtil.d("tt", "将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine);
+//                LogUtil.d("tt", "将待绘制的放到绘制列表中，然后更新基线， 之前基线：" + baseLine);
                 baseLine -= (waitItem.h + methodCutPointSpace);
                 distancePerFrame = getDistancePerFrame(Math.abs(baseLine), aniTime);
-                LogUtil.d("tt", "更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
+//                LogUtil.d("tt", "更新之后的基线：" + baseLine + "  一帧对应的距离：" + distancePerFrame);
             }
             baseLine += distancePerFrame;
         }
 
-        LogUtil.d("tt", "onDraw的基线：" + baseLine);
+
+        if (isFling) {//Fling计算
+            isFling = flingHelper.onDraw();
+        }
+
+//        LogUtil.d("tt", "onDraw的基线：" + baseLine);
         if (baseLine < 0) {
             invalidate();
         } else if (baseLine > 0) {
             baseLine = 0;
         }
 
+        System.out.println("onDraw的基线：" + baseLine);
         //获得最大的宽度
         for (CallDrawItem method : MethodQueue.methods) {
             int w = getW(method);
@@ -111,13 +120,10 @@ public class PerformanceView extends View {
         }
         //计算缩放的比例
         if (maxW > 0) {
-            scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(50)) / (float) maxW;
-
-            //测试
-            scaleW = 5;
+            scaleW = (ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(100)) / (float) maxW;//计算缩放比例是为了填充屏幕宽度，但是留一定距离出来
         }
 
-        LogUtil.d("计算的缩放比例：" + scaleW + " 屏幕的宽度：" + ScreenUtils.getScreenWidth() + " 最大的宽度：" + maxW);
+//        LogUtil.d("计算的缩放比例：" + scaleW + " 屏幕的宽度：" + ScreenUtils.getScreenWidth() + " 最大的宽度：" + maxW);
 
 
         //计算尺寸
@@ -125,24 +131,30 @@ public class PerformanceView extends View {
             CallDrawUtil.caculate(method, scaleW, methodH);
         }
 
+       
+        Iterator<CallDrawItem> it = MethodQueue.methods.iterator();
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+            if (count > 100) {//队列中放100个代码调用片段
+                it.remove();
+                count--;
+            }
+        }
         //布局
         int nextX = 0;
         int nextY = baseLine;
-        Iterator<CallDrawItem> it = MethodQueue.methods.iterator();
-        while (it.hasNext()) {
-            CallDrawItem next = it.next();
-            if (nextY >= ScreenUtils.getScreenHeight()) {
-//                MethodQueue.methods.remove(next);//超出屏幕的边界，直接删除
-                it.remove();
-            }
-            layout(next, nextY, nextX);
-            nextY += (next.h + ConvertUtils.dp2px(5));//得加上代码片段之间的间隔
+        for (CallDrawItem method : MethodQueue.methods) {
+            layout(method, nextY, nextX);
+            nextY += (method.h + ConvertUtils.dp2px(5));//得加上代码片段之间的间隔
         }
+
+
         //绘制
         for (CallDrawItem method : MethodQueue.methods) {
             draw(method, canvas);
         }
-
     }
 
 
@@ -164,7 +176,7 @@ public class PerformanceView extends View {
         mPaint.setColor(item.color);
         canvas.drawRect(item.pos, mPaint);
         //绘制名字
-        Log.d("wdd", "drawRightTop绘制文字：" + getName(item) + " 类：" + item.classC);
+//        Log.d("wdd", "drawRightTop绘制文字：" + getName(item) + " 类：" + item.classC);
         item.textPos = drawRightTop(item, canvas);
         //绘制孩子
         if (item.childs != null && item.totalTime > 0) {
@@ -188,7 +200,7 @@ public class PerformanceView extends View {
         //更新自己的位置
         Rect pos = new Rect(x, y, x + item.w, y + item.h);
         item.pos = pos;
-        LogUtil.d("方法：" + item.signature + " 测量得到的坐标：left:" + pos.left + " top:" + pos.top + " right:" + pos.right + " bottom:" + pos.bottom);
+//        LogUtil.d("方法：" + item.signature + " 测量得到的坐标：left:" + pos.left + " top:" + pos.top + " right:" + pos.right + " bottom:" + pos.bottom);
 
         //更新孩子的位置
         if (item.childs != null && item.childs.size() > 0) {
@@ -312,7 +324,7 @@ public class PerformanceView extends View {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                LogUtil.d("检查是否有需要绘制的");
+//                LogUtil.d("检查是否有需要绘制的");
                 if (MethodQueue.waits.size() > 0) {
                     post(() -> invalidate());
                 }
@@ -330,16 +342,17 @@ public class PerformanceView extends View {
             if (System.currentTimeMillis() - lastDwon < 250) {
 
             } else {
-                isPause = true;
+                isAutoScrollPause = true;
             }
 
             lastDwon = System.currentTimeMillis();
+            flingHelper.cancelFling();
             return false;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-//            isPause = true;
+//            isAutoScrollPause = true;
             return super.onSingleTapConfirmed(e);
         }
 
@@ -347,21 +360,48 @@ public class PerformanceView extends View {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             System.out.println("onDoubleTap");
-            isPause = false;
+            isAutoScrollPause = false;
             return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             System.out.println("onScroll");
+            isAutoScrollPause = true;
+            baseLine -= distanceY;
+            invalidate();
             return super.onScroll(e1, e2, distanceX, distanceY);
         }
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             System.out.println("onFling");
+            isFling = true;
+            isAutoScrollPause = true;
+            int bottom = getBottom();
+            flingHelper.fling(baseLine, -(Math.abs(baseLine) + Math.abs(bottom)), 0 , (int) velocityY);
             return super.onFling(e1, e2, velocityX, velocityY);
         }
-    }
 
+
+        /**
+         * 获取所有需要绘制的View的最底部位置
+         * @return
+         */
+        private int getBottom() {
+            if (MethodQueue.methods.size() == 0) {
+                return 0;
+            }
+            return MethodQueue.methods.get(MethodQueue.methods.size() - 1).pos.bottom;
+        }
+    }
+    
+
+    private FlingHelper.FlingListener flingListener = new FlingHelper.FlingListener() {
+        @Override
+        public void onFling(int cur) {
+            baseLine = cur;
+            invalidate();
+        }
+    };
 }
