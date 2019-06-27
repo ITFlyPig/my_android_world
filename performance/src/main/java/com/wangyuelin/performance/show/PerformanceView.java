@@ -8,13 +8,11 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.wangyuelin.myandroidworld.util.ConvertUtils;
-import com.wangyuelin.myandroidworld.util.LogUtil;
 import com.wangyuelin.myandroidworld.util.ScreenUtils;
 
 import java.util.Iterator;
@@ -62,8 +60,8 @@ public class PerformanceView extends View {
         methodH = ConvertUtils.dp2px(30);
         colors = new int[]{Color.parseColor("#8B008B"), Color.parseColor("#4B0082"), Color.parseColor("#483D8B"),
                 Color.parseColor("#0000FF"), Color.parseColor("#191970"), Color.parseColor("#778899"), Color.parseColor("#00CED1")
-                ,Color.parseColor("#2E8B57"), Color.parseColor("#808000"), Color.parseColor("#DAA520"), Color.parseColor("#FF8C00")
-                ,Color.parseColor("#8B4513"), Color.parseColor("#FF4500"), Color.parseColor("#696969"), Color.parseColor("#800000")};
+                , Color.parseColor("#2E8B57"), Color.parseColor("#808000"), Color.parseColor("#DAA520"), Color.parseColor("#FF8C00")
+                , Color.parseColor("#8B4513"), Color.parseColor("#FF4500"), Color.parseColor("#696969"), Color.parseColor("#800000")};
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(ConvertUtils.sp2px(7));
@@ -131,7 +129,7 @@ public class PerformanceView extends View {
             CallDrawUtil.caculate(method, scaleW, methodH);
         }
 
-       
+
         Iterator<CallDrawItem> it = MethodQueue.methods.iterator();
         int count = 0;
         while (it.hasNext()) {
@@ -230,10 +228,11 @@ public class PerformanceView extends View {
 
     /**
      * 将文字绘制到右上角
-     *
      */
     private Rect drawRightTop(CallDrawItem item, Canvas canvas) {
         String methodName = getName(item);
+        //方法加上耗时时间
+        methodName += "(" + item.totalTime + ")";
         Rect rect = item.pos;
         if (TextUtils.isEmpty(methodName) || rect == null) {
             return null;
@@ -253,7 +252,7 @@ public class PerformanceView extends View {
             Rect parentTextPos = item.parent.textPos;
             if (x + w > parentTextPos.left && y - h < parentTextPos.bottom) {//自己的text和父text有重叠，调整
                 //调整到父text的下面
-                y  = parentTextPos.bottom + h;
+                y = parentTextPos.bottom + h;
             }
         }
 
@@ -333,7 +332,8 @@ public class PerformanceView extends View {
     }
 
     private long lastDwon;
-    private class  MyGestureListener extends GestureDetector.SimpleOnGestureListener{
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
 
         @Override
@@ -379,13 +379,14 @@ public class PerformanceView extends View {
             isFling = true;
             isAutoScrollPause = true;
             int bottom = getBottom();
-            flingHelper.fling(baseLine, -(Math.abs(baseLine) + Math.abs(bottom)), 0 , (int) velocityY);
+            flingHelper.fling(baseLine, -(Math.abs(baseLine) + Math.abs(bottom)), 0, (int) velocityY);
             return super.onFling(e1, e2, velocityX, velocityY);
         }
 
 
         /**
          * 获取所有需要绘制的View的最底部位置
+         *
          * @return
          */
         private int getBottom() {
@@ -395,7 +396,7 @@ public class PerformanceView extends View {
             return MethodQueue.methods.get(MethodQueue.methods.size() - 1).pos.bottom;
         }
     }
-    
+
 
     private FlingHelper.FlingListener flingListener = new FlingHelper.FlingListener() {
         @Override
@@ -404,4 +405,23 @@ public class PerformanceView extends View {
             invalidate();
         }
     };
+
+
+    public interface Funcs{
+        void clear();//清除显示
+    }
+
+    private Funcs funcListener = () -> {
+        MethodQueue.methods.clear();
+        MethodQueue.waits.clear();
+        invalidate();
+    };
+
+    /**
+     * 对外部提供的功能
+     * @return
+     */
+    public Funcs getFuncs() {
+        return funcListener;
+    }
 }

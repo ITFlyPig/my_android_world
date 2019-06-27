@@ -30,13 +30,13 @@ public class MainActivity extends Activity {
             }
         });
 
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                String json = "{\"classC\":\"com.talk51.ushare.ShareManager.initShareParams(android.content\",\"endTIme\":1561485952401,\"signature\":\"com.talk51.ushare.ShareManager.initShareParams(android.content.Context)\",\"startTime\":1561485952351,\"totalTime\":50}";
-                WebSocketHelper.getInstance().send(json);
-            }
-        }, 1000, 4000);
+//        new Timer().scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                String json = "{\"classC\":\"com.talk51.ushare.ShareManager.initShareParams(android.content\",\"endTIme\":1561485952401,\"signature\":\"com.talk51.ushare.ShareManager.initShareParams(android.content.Context)\",\"startTime\":1561485952351,\"totalTime\":50}";
+//                WebSocketHelper.getInstance().send(json);
+//            }
+//        }, 1000, 4000);
 
 
 
