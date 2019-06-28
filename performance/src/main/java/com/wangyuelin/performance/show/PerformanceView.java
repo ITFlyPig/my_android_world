@@ -8,13 +8,16 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.wangyuelin.myandroidworld.util.ConvertUtils;
 import com.wangyuelin.myandroidworld.util.ScreenUtils;
+import com.wangyuelin.performance.fps.FpsBean;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +45,8 @@ public class PerformanceView extends View {
     private GestureDetector mGestureDetector;
     private FlingHelper flingHelper;
     private boolean isFling;
+    private int fpsLinew;//fps的线宽
+    private int lineStartX;
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -78,6 +83,9 @@ public class PerformanceView extends View {
         });
 
         flingHelper = new FlingHelper(getContext(), flingListener);
+        fpsLinew = ConvertUtils.dp2px(1);
+        lineStartX = ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(10);
+        mPaint.setStrokeWidth(fpsLinew);
     }
 
     @Override
@@ -150,9 +158,14 @@ public class PerformanceView extends View {
 
 
         //绘制
+        CallDrawItem pre = null;
         for (CallDrawItem method : MethodQueue.methods) {
             draw(method, canvas);
+            drawFps(method, pre, canvas);
+            pre = method;
         }
+
+
     }
 
 
@@ -424,4 +437,74 @@ public class PerformanceView extends View {
     public Funcs getFuncs() {
         return funcListener;
     }
+
+    private void drawFps(CallDrawItem curDrawItem, CallDrawItem pre, Canvas canvas) {
+        if (curDrawItem == null) {
+            return;
+        }
+        if (isDrawFps(curDrawItem, pre)) {
+            mPaint.setColor(Color.RED);
+            canvas.drawLine(lineStartX, curDrawItem.pos.top, lineStartX, curDrawItem.pos.bottom + methodCutPointSpace, mPaint);
+        }
+    }
+
+    private boolean isDrawFps(CallDrawItem cur, CallDrawItem pre) {
+        Log.d("fps", "查看这个时间段是否有fps");
+        if (cur == null ) {
+            return false;
+        }
+        //判断是否需要绘制fps
+        FpsBean fpsBean = getFps(cur, pre);
+        if (fpsBean == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取fps队列中的最大时间
+     * @return
+     */
+    private long getFpsMaxTime() {
+        if (MethodQueue.fps.size() > 0) {
+            return MethodQueue.fps.get(MethodQueue.fps.size() - 1).endTime;
+        }
+        return 0;
+    }
+
+    /**
+     * 获得Fps队列中的最小时间
+     * @return
+     */
+    private long getFpsMinTime() {
+        if (MethodQueue.fps.size() == 0) {
+            return 0;
+        }
+        return MethodQueue.methods.get(0).startTime;
+    }
+
+    /**
+     * 据开始时间获得包含对应时间的fps统计bean
+     * @return
+     */
+    private FpsBean getFps(CallDrawItem cur, CallDrawItem pre) {
+       for (int i = 0; i < MethodQueue.fps.size(); i++) {
+           FpsBean fpsBean = MethodQueue.fps.get(i);
+           if (pre == null) {
+               if (fpsBean.startTime <= cur.startTime) {
+                   return fpsBean;
+               }
+           } else {
+               if (fpsBean.startTime <= cur.endTIme && fpsBean.startTime > pre.endTIme //判断了fps的开始部分
+                       || fpsBean.endTime >= cur.startTime //判断fps的结尾部分
+               ) {
+                   return fpsBean;
+               }
+
+           }
+       }
+       return null;
+
+    }
+
 }

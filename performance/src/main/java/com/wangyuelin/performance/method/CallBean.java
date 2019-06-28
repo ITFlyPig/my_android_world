@@ -16,6 +16,9 @@ public class CallBean {
     public Object[] args;//方法的参数
     public List<CallBean> childs;//被调用的子方法
     public CallBean parent;//父调用
+    public String className;//类的名称
+    public String methodName;//方法的名称
+
 
     public CallBean() {
     }

@@ -15,32 +15,28 @@ public class PerformanceUtil {
     private static long mLastFrameTime;
     private static long mFrameCount;
     private static volatile boolean isStopFps;
-    private static int okFps = 50;//低于ok帧率的算是掉帧
     private static Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long frameTimeNanos) {
-            if (mLastFrameTime == 0) {
-                mLastFrameTime = frameTimeNanos;
-            }
-            float diff = (frameTimeNanos - mLastFrameTime) / 1000000.0f;//得到毫秒，正常是 16.66 ms
-            if (diff > 500) {
-                float fps = (((float) (mFrameCount * 1000L)) / diff);
-                mFrameCount = 0;
-                mLastFrameTime = 0;
-                FpsBean fpsBean = new FpsBean(mLastFrameTime, frameTimeNanos, fps);
-                ThreadHelper.getInstance().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        String json = JSON.toJSONString(fpsBean);
-                        WebSocketHelper.getInstance().send(json);
-                    }
-                });
-            } else {
-                ++mFrameCount;
-            }
-            if (!isStopFps) {
-                Choreographer.getInstance().postFrameCallback(this);
-            }
+//            if (mLastFrameTime == 0) {
+//                mLastFrameTime = frameTimeNanos;
+//            }
+//            float diff = (frameTimeNanos - mLastFrameTime) / 1000000.0f;//得到毫秒，正常是 16.66 ms
+//            if (diff > 500) {
+//                float fps = (((float) (mFrameCount * 1000L)) / diff);
+//                mFrameCount = 0;
+//                mLastFrameTime = 0;
+//                FpsBean fpsBean = new FpsBean(mLastFrameTime, frameTimeNanos, fps);
+//                ThreadHelper.getInstance().submit(() -> {
+//                    String json = JSON.toJSONString(fpsBean);
+//                    WebSocketHelper.getInstance().send(json);
+//                });
+//            } else {
+//                ++mFrameCount;
+//            }
+//            if (!isStopFps) {
+//                Choreographer.getInstance().postFrameCallback(this);
+//            }
 
         }
     };

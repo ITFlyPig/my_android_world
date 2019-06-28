@@ -1,19 +1,21 @@
 package com.wangyuelin.performance.socket;
 
-import com.wangyuelin.performance.method.CallBean;
 import com.wangyuelin.performance.fps.FpsBean;
-import com.wangyuelin.performance.show.CallDrawItem;
+import com.wangyuelin.performance.method.CallBean;
 
 public class SocketUploadBean {
-    private CallDrawItem methodCall; //方法调用相关
+    private CallBean methodCall; //方法调用相关
     private FpsBean fps;//帧率相关的
 
-    public SocketUploadBean(CallDrawItem methodCall, FpsBean fps) {
+    public SocketUploadBean() {
+    }
+
+    public SocketUploadBean(CallBean methodCall, FpsBean fps) {
         this.methodCall = methodCall;
         this.fps = fps;
     }
 
-    public CallDrawItem getMethodCall() {
+    public CallBean getMethodCall() {
         return methodCall;
     }
 
