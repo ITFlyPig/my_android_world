@@ -1,4 +1,4 @@
-package com.wangyuelin.performance;
+package com.wangyuelin.performance.socket;
 
 
 import com.neovisionaries.ws.client.WebSocket;

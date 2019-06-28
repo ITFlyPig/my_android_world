@@ -2,9 +2,7 @@ package com.wangyuelin.uiwidgetmodule;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,8 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.wangyuelin.myandroidworld.util.Utils;
-import com.wangyuelin.performance.MethodCall;
+import com.wangyuelin.performance.method.MethodCall;
 
 import java.util.ArrayList;
 import java.util.List;

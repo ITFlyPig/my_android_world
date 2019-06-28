@@ -2,7 +2,7 @@ package com.wangyuelin.app;
 
 import com.wangyuelin.common.BaseApplication;
 import com.wangyuelin.performance.ThreadHelper;
-import com.wangyuelin.performance.WebSocketHelper;
+import com.wangyuelin.performance.socket.WebSocketHelper;
 
 public class MyApplication extends BaseApplication {
     @Override

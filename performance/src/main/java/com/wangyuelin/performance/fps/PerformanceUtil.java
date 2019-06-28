@@ -1,19 +1,21 @@
-package com.wangyuelin.performance;
+package com.wangyuelin.performance.fps;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.util.Log;
 import android.view.Choreographer;
 
-import com.wangyuelin.common.BaseApplication;
+import com.alibaba.fastjson.JSON;
+import com.wangyuelin.performance.ThreadHelper;
+import com.wangyuelin.performance.socket.WebSocketHelper;
 
 /**
- * 性能检测工具
+ * 统计帧率
  */
 public class PerformanceUtil {
     private static long mLastFrameTime;
     private static long mFrameCount;
     private static volatile boolean isStopFps;
+    private static int okFps = 50;//低于ok帧率的算是掉帧
     private static Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long frameTimeNanos) {
@@ -22,11 +24,17 @@ public class PerformanceUtil {
             }
             float diff = (frameTimeNanos - mLastFrameTime) / 1000000.0f;//得到毫秒，正常是 16.66 ms
             if (diff > 500) {
-                double fps = (((double) (mFrameCount * 1000L)) / diff);
+                float fps = (((float) (mFrameCount * 1000L)) / diff);
                 mFrameCount = 0;
                 mLastFrameTime = 0;
-                String activityName = getStackTopActivity(BaseApplication.getApplication());
-                Log.d("Fps", "Activity:" + activityName + " Fps:" + fps);
+                FpsBean fpsBean = new FpsBean(mLastFrameTime, frameTimeNanos, fps);
+                ThreadHelper.getInstance().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        String json = JSON.toJSONString(fpsBean);
+                        WebSocketHelper.getInstance().send(json);
+                    }
+                });
             } else {
                 ++mFrameCount;
             }

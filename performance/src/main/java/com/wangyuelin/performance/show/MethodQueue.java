@@ -2,7 +2,9 @@ package com.wangyuelin.performance.show;
 
 import com.alibaba.fastjson.JSON;
 import com.wangyuelin.myandroidworld.util.LogUtil;
-import com.wangyuelin.performance.WebSocketHelper;
+import com.wangyuelin.performance.fps.FpsBean;
+import com.wangyuelin.performance.socket.SocketUploadBean;
+import com.wangyuelin.performance.socket.WebSocketHelper;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,25 +16,33 @@ import java.util.List;
 public class MethodQueue {
     public static List<CallDrawItem> methods;//已经绘制的列表
     public static List<CallDrawItem> waits;//等待绘制的列表
+    public static List<FpsBean> fps;//Fps列表
 
     static {
-        methods = Collections.synchronizedList(new LinkedList<CallDrawItem>());
-        waits = Collections.synchronizedList(new LinkedList<CallDrawItem>());
+        methods = Collections.synchronizedList(new LinkedList<>());
+        waits = Collections.synchronizedList(new LinkedList<>());
+        fps = Collections.synchronizedList(new LinkedList<>());
 
         WebSocketHelper.getInstance().setWebSocketListener(new WebSocketHelper.SocketListener() {
             @Override
             public void onMessage(String msg) {
-                CallDrawItem callBean =  JSON.parseObject(msg, CallDrawItem.class);
-                if (callBean.totalTime > 0) {//过滤掉执行时间为0的代码块，因为0的执行时间不影响性能
-                    waits.add(callBean);
-                    LogUtil.d("将Socket下发的数据添加到waits中");
+                SocketUploadBean uploadBean = JSON.parseObject(msg, SocketUploadBean.class);
+                if (uploadBean == null) {
+                    return;
+                }
+                if (uploadBean.getFps() != null) {//fps数据
+                    FpsBean fpsBean = uploadBean.getFps();
+                    fps.add(fpsBean);
                 }
 
+                if (uploadBean.getMethodCall() != null) {//方法统计数据
+                    CallDrawItem callBean = uploadBean.getMethodCall();
+                    if (callBean.totalTime > 0) {//过滤掉执行时间为0的代码块，因为0的执行时间不影响性能
+                        waits.add(callBean);
+                    }
+                }
             }
         });
-
-//        makeTest();
-
     }
 
     /**

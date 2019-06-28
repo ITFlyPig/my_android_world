@@ -5,13 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.wangyuelin.myandroidworld.util.LogUtil;
-import com.wangyuelin.performance.MethodCall;
-import com.wangyuelin.performance.WebSocketHelper;
-import com.wangyuelin.performance.show.MethodQueue;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import com.wangyuelin.performance.method.MethodCall;
 
 
 public class MainActivity extends Activity {

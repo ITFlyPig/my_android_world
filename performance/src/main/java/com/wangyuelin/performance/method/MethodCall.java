@@ -1,8 +1,9 @@
-package com.wangyuelin.performance;
+package com.wangyuelin.performance.method;
 
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.wangyuelin.performance.ThreadHelper;
 
 public class MethodCall {
     private static CallHelper.CallListener callListener = callBean -> ThreadHelper.getInstance().submit(() -> {

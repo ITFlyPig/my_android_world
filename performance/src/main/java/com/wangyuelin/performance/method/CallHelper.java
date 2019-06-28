@@ -1,4 +1,4 @@
-package com.wangyuelin.performance;
+package com.wangyuelin.performance.method;
 
 import android.text.TextUtils;
 
