@@ -80,12 +80,12 @@ public class MethodQueue {
     }
 
     public static void makeTest() {
-//        String fps1 = "{\"fps\":{\"endTime\":1561705312948,\"fps\":40.39143,\"startTime\":1561705312930}}";//跨两个
-//        fps.add(parseFps(fps1));
-//        String fps2 = "{\"fps\":{\"endTime\":1561705312971,\"fps\":40.06433,\"startTime\":1561705312949}}";//夸一个
+        String fps1 = "{\"fps\":{\"endTime\":1561705312971,\"fps\":40.39143,\"startTime\":1561705312949}}";//跨两个
+        fps.add(parseFps(fps1));
+//        String fps2 = "{\"fps\":{\"endTime\":1561705312949,\"fps\":40.06433,\"startTime\":1561705312929}}";//夸一个
 //        fps.add(parseFps(fps2));
-        String fps3 = "{\"fps\":{\"endTime\":1561705312990,\"fps\":40.87429,\"startTime\":1561705312970}}";//夸一个
-        fps.add(parseFps(fps3));
+//        String fps3 = "{\"fps\":{\"endTime\":1561705312972,\"fps\":40.87429,\"startTime\":1561705312970}}";//夸一个
+//        fps.add(parseFps(fps3));
 
         String method1 = "{\"methodCall\":{\"classC\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter\",\"className\":\"AutoScrollViewBanner$TGPageAdapter\",\"endTIme\":1561705312933,\"methodName\":\"getCount\",\"signature\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter.getCount()\",\"startTime\":1561705312930,\"totalTime\":3}}";
         String method2 = "{\"methodCall\":{\"classC\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter\",\"className\":\"AutoScrollViewBanner$TGPageAdapter\",\"endTIme\":1561705312948,\"methodName\":\"getCount\",\"signature\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter.getCount()\",\"startTime\":1561705312938,\"totalTime\":10}}";

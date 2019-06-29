@@ -490,17 +490,18 @@ public class PerformanceView extends View {
     private FpsBean getFps(CallDrawItem cur, CallDrawItem pre) {
        for (int i = 0; i < MethodQueue.fps.size(); i++) {
            FpsBean fpsBean = MethodQueue.fps.get(i);
+
+           //判断是否有fps的结束部分包含这个方法片段
            if (pre == null) {
-               if (fpsBean.startTime <= cur.startTime) {
+               if (fpsBean.endTime >= cur.endTIme) {
                    return fpsBean;
                }
            } else {
-               if (fpsBean.startTime <= cur.endTIme && fpsBean.startTime > pre.endTIme //判断了fps的开始部分
-                       || fpsBean.endTime >= cur.startTime //判断fps的结尾部分
-               ) {
+
+               if (fpsBean.endTime <= pre.startTime  && fpsBean.endTime > cur.startTime
+                       || (fpsBean.startTime < cur.endTIme && fpsBean.endTime > pre.startTime)){
                    return fpsBean;
                }
-
            }
        }
        return null;
