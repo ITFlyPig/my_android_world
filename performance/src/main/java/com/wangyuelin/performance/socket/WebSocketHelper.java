@@ -36,7 +36,7 @@ public class WebSocketHelper {
         try {
             mWebSocket = new WebSocketFactory()
                     .setConnectionTimeout(3000)
-                    .createSocket("ws://172.16.129.100:8080/websocket/" + sid)
+                    .createSocket("ws://192.168.0.104:8080/websocket/" + sid)
                     .setFrameQueueSize(10)
                     .setMissingCloseFrameAllowed(false)
                     .addListener(webSocketListener)
@@ -87,7 +87,6 @@ public class WebSocketHelper {
         @Override
         public void onTextMessage(WebSocket websocket, String text) throws Exception {
             super.onTextMessage(websocket, text);
-            LogUtil.e("onTextMessage", "onTextMessage：" + text);
             if (mWebSocketListener != null) {
                 mWebSocketListener.onMessage(text);
             }

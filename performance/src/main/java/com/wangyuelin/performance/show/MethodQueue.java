@@ -1,5 +1,6 @@
 package com.wangyuelin.performance.show;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -32,35 +33,47 @@ public class MethodQueue {
             @Override
             public void onMessage(String msg) {
                 SocketUploadBean uploadBean = JSON.parseObject(msg, SocketUploadBean.class);
-                if (uploadBean == null) {
+                JSONObject jsonObject = JSON.parseObject(msg);
+                if (jsonObject == null) {
                     return;
                 }
-                if (uploadBean.getFps() != null) {//fps数据
-                    FpsBean fpsBean = uploadBean.getFps();
-                    if (fpsBean.fps < 50) {//50以下的算掉帧
-                        if (fps.size() > 1000) {
-                            //每次删除200个
-                            Iterator<FpsBean> it = fps.iterator();
-                            int count = 0;
-                            while (it.hasNext() && count < 200) {
-                                it.next();
-                                it.remove();
-                                count++;
-                            }
-                        }
-                        fps.add(fpsBean);
-                    }
 
+                JSONObject fpsJsonObjet = jsonObject.getJSONObject("fps");
+                if (fpsJsonObjet != null) {
+                    FpsBean fpsBean = JSON.parseObject(fpsJsonObjet.toJSONString(), FpsBean.class);
+                    if (fpsBean != null) {
+//                        Log.e("wyl", "接受到fps：" + fpsBean);
+                        if (fpsBean.fps < 55) {//50以下的算掉帧
+                            if (fps.size() > 1000) {
+                                //每次删除200个
+                                Iterator<FpsBean> it = fps.iterator();
+                                int count = 0;
+                                while (it.hasNext() && count < 200) {
+                                    it.next();
+                                    it.remove();
+                                    count++;
+                                }
+                            }
+                            addFps(fpsBean);
+                        }
+                    }
                 }
 
-                if (uploadBean.getMethodCall() != null) {//方法统计数据
-//                    CallDrawItem callBean = uploadBean.getMethodCall();
-//                    if (callBean.totalTime > 0) {//过滤掉执行时间为0的代码块，因为0的执行时间不影响性能
-//                        waits.add(callBean);
-//                    }
+
+                JSONObject callJsonObjet = jsonObject.getJSONObject("methodCall");
+                if (callJsonObjet != null) {
+                    CallDrawItem callDrawItem = JSON.parseObject(callJsonObjet.toJSONString(), CallDrawItem.class);
+                    if (callDrawItem != null) {
+                        Log.e("wyl", "接收到CallDrawItem：" + callDrawItem);
+                        if (callDrawItem.totalTime > 0) {//过滤掉执行时间为0的代码块，因为0的执行时间不影响性能
+                            waits.add(callDrawItem);
+                        }
+                    }
                 }
             }
         });
+
+        fpsColors = new int[]{Color.parseColor("#EE3B3B"), Color.parseColor("#FF8C00"), Color.parseColor("#A2CD5A")};
 
         makeTest();
     }
@@ -81,11 +94,11 @@ public class MethodQueue {
 
     public static void makeTest() {
         String fps1 = "{\"fps\":{\"endTime\":1561705312972,\"fps\":40.39143,\"startTime\":1561705312949}}";//跨两个
-        fps.add(parseFps(fps1));
-//        String fps2 = "{\"fps\":{\"endTime\":1561705312949,\"fps\":40.06433,\"startTime\":1561705312929}}";//夸一个
-//        fps.add(parseFps(fps2));
-//        String fps3 = "{\"fps\":{\"endTime\":1561705312972,\"fps\":40.87429,\"startTime\":1561705312970}}";//夸一个
-//        fps.add(parseFps(fps3));
+        addFps(parseFps(fps1));
+        String fps2 = "{\"fps\":{\"endTime\":1561705312948,\"fps\":40.06433,\"startTime\":1561705312938}}";//夸一个
+        addFps(parseFps(fps2));
+        String fps3 = "{\"fps\":{\"endTime\":1561705312933,\"fps\":40.87429,\"startTime\":1561705312930}}";//夸一个
+        addFps(parseFps(fps3));
 
         String method1 = "{\"methodCall\":{\"classC\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter\",\"className\":\"AutoScrollViewBanner$TGPageAdapter\",\"endTIme\":1561705312933,\"methodName\":\"getCount\",\"signature\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter.getCount()\",\"startTime\":1561705312930,\"totalTime\":3}}";
         String method2 = "{\"methodCall\":{\"classC\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter\",\"className\":\"AutoScrollViewBanner$TGPageAdapter\",\"endTIme\":1561705312948,\"methodName\":\"getCount\",\"signature\":\"com.talk51.kid.view.AutoScrollViewBanner$TGPageAdapter.getCount()\",\"startTime\":1561705312938,\"totalTime\":10}}";
@@ -115,5 +128,32 @@ public class MethodQueue {
     private static CallDrawItem parseMethodCall(String json) {
         JSONObject jsonObject = JSON.parseObject(json);
         return JSON.parseObject(jsonObject.get("methodCall").toString(), CallDrawItem.class);
+    }
+
+    private static int[] fpsColors;
+
+    /**
+     * 获取绘制fps线条的颜色值
+     */
+    private static int indexFps = 0;
+    public static int getFpsColor() {
+        if (indexFps >= fpsColors.length) {
+            indexFps = 0;
+        }
+        int color = fpsColors[indexFps];
+        indexFps++;
+        return color;
+    }
+
+    /**
+     * 将fps数据添加到列表中
+     * @param fpsBean
+     */
+    private static void addFps(FpsBean fpsBean) {
+        if (fpsBean == null || fpsBean.fps > 50) {
+            return;
+        }
+        fpsBean.color = getFpsColor();
+        fps.add(fpsBean);
     }
 }

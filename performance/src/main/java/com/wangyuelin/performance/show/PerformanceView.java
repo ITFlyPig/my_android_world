@@ -17,7 +17,6 @@ import com.wangyuelin.myandroidworld.util.ConvertUtils;
 import com.wangyuelin.myandroidworld.util.ScreenUtils;
 import com.wangyuelin.performance.fps.FpsBean;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -421,7 +420,7 @@ public class PerformanceView extends View {
     };
 
 
-    public interface Funcs{
+    public interface Funcs {
         void clear();//清除显示
     }
 
@@ -433,6 +432,7 @@ public class PerformanceView extends View {
 
     /**
      * 对外部提供的功能
+     *
      * @return
      */
     public Funcs getFuncs() {
@@ -443,75 +443,46 @@ public class PerformanceView extends View {
         if (curDrawItem == null) {
             return;
         }
-        String fps = isDrawFps(curDrawItem, pre);
-        if (fps != null) {
-            mPaint.setColor(Color.RED);
+        Log.d("fps", "drawFps");
+        FpsBean fpsBean = getFps(curDrawItem, pre);
+        if (fpsBean != null) {
+            String fps = String.valueOf((int)fpsBean.fps);
+            mPaint.setColor(fpsBean.color);
             canvas.drawLine(lineStartX, curDrawItem.pos.top, lineStartX, curDrawItem.pos.bottom + methodCutPointSpace, mPaint);
-
             String showfps = "fps:" + fps + "";
             mPaint.getTextBounds(showfps, 0, showfps.length(), temp);
-            canvas.drawText(showfps,lineStartX - temp.width(), curDrawItem.pos.bottom - curDrawItem.pos.height() / 2, mPaint);
+            canvas.drawText(showfps, lineStartX - temp.width() - ConvertUtils.dp2px(2), curDrawItem.pos.bottom - curDrawItem.pos.height() / 2, mPaint);
+            Log.d("fps", "获得fpsbean 绘制的线条的高度：starty:" + (curDrawItem.pos.top) + " endY:" + (curDrawItem.pos.bottom + methodCutPointSpace) + " startX:" + lineStartX);
         }
+
     }
 
-    private String isDrawFps(CallDrawItem cur, CallDrawItem pre) {
-        Log.d("fps", "查看这个时间段是否有fps");
-        if (cur == null ) {
-            return null;
-        }
-        //判断是否需要绘制fps
-        FpsBean fpsBean = getFps(cur, pre);
-        if (fpsBean == null) {
-            return null;
-        }
-        return String.valueOf((int)fpsBean.fps);
-    }
-
-    /**
-     * 获取fps队列中的最大时间
-     * @return
-     */
-    private long getFpsMaxTime() {
-        if (MethodQueue.fps.size() > 0) {
-            return MethodQueue.fps.get(MethodQueue.fps.size() - 1).endTime;
-        }
-        return 0;
-    }
-
-    /**
-     * 获得Fps队列中的最小时间
-     * @return
-     */
-    private long getFpsMinTime() {
-        if (MethodQueue.fps.size() == 0) {
-            return 0;
-        }
-        return MethodQueue.methods.get(0).startTime;
-    }
 
     /**
      * 据开始时间获得包含对应时间的fps统计bean
+     *
      * @return
      */
     private FpsBean getFps(CallDrawItem cur, CallDrawItem pre) {
-       for (int i = 0; i < MethodQueue.fps.size(); i++) {
-           FpsBean fpsBean = MethodQueue.fps.get(i);
+        Log.d("fps", "getFps");
+        for (int i = 0; i < MethodQueue.fps.size(); i++) {
+            FpsBean fpsBean = MethodQueue.fps.get(i);
 
-           //判断是否有fps的结束部分包含这个方法片段
-           if (pre == null) {
-               if (fpsBean.endTime > cur.startTime) {
-                   return fpsBean;
-               }
-           } else {
+            Log.d("fps", "fps starttime:" + fpsBean.startTime + " endtime:" + fpsBean.endTime + " clallstartTime:" + cur.startTime + " callendTime:" + cur.endTIme);
+            //判断是否有fps的结束部分包含这个方法片段
+            if (pre == null) {
+                if (fpsBean.endTime > cur.startTime) {
+                    return fpsBean;
+                }
+            } else {
 
-               if (fpsBean.endTime <= pre.startTime  && fpsBean.endTime > cur.startTime
-                       || (fpsBean.startTime < cur.endTIme && fpsBean.endTime > pre.startTime)){
-                   return fpsBean;
-               }
-           }
-       }
-       return null;
-
+                if (fpsBean.endTime <= pre.startTime && fpsBean.endTime > cur.startTime
+                        || (fpsBean.startTime < cur.endTIme && fpsBean.endTime > pre.startTime)) {
+                    return fpsBean;
+                }
+            }
+        }
+        return null;
     }
 
 }

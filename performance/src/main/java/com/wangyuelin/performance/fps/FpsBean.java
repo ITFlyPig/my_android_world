@@ -5,6 +5,7 @@ public class FpsBean {
     public long startTime;  //开始统计的时间
     public long endTime;   //结束统计的时间
     public float fps;        //帧率
+    public int color;
 
 
     public FpsBean() {
