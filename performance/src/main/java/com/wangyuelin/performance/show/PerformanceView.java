@@ -493,7 +493,7 @@ public class PerformanceView extends View {
 
            //判断是否有fps的结束部分包含这个方法片段
            if (pre == null) {
-               if (fpsBean.endTime >= cur.endTIme) {
+               if (fpsBean.endTime > cur.startTime) {
                    return fpsBean;
                }
            } else {

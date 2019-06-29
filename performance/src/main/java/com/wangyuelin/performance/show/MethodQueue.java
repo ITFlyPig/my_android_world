@@ -80,7 +80,7 @@ public class MethodQueue {
     }
 
     public static void makeTest() {
-        String fps1 = "{\"fps\":{\"endTime\":1561705312971,\"fps\":40.39143,\"startTime\":1561705312949}}";//跨两个
+        String fps1 = "{\"fps\":{\"endTime\":1561705312970,\"fps\":40.39143,\"startTime\":1561705312949}}";//跨两个
         fps.add(parseFps(fps1));
 //        String fps2 = "{\"fps\":{\"endTime\":1561705312949,\"fps\":40.06433,\"startTime\":1561705312929}}";//夸一个
 //        fps.add(parseFps(fps2));
