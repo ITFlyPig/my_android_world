@@ -47,6 +47,7 @@ public class PerformanceView extends View {
     private boolean isFling;
     private int fpsLinew;//fps的线宽
     private int lineStartX;
+    private Rect temp = new Rect();
 
     public PerformanceView(Context context) {
         this(context, null);
@@ -252,7 +253,7 @@ public class PerformanceView extends View {
         }
 
         mPaint.setColor(Color.BLACK);
-        Rect temp = new Rect();
+
         mPaint.getTextBounds(methodName, 0, methodName.length(), temp);
         int w = temp.width();
         int h = temp.height();
@@ -442,23 +443,28 @@ public class PerformanceView extends View {
         if (curDrawItem == null) {
             return;
         }
-        if (isDrawFps(curDrawItem, pre)) {
+        String fps = isDrawFps(curDrawItem, pre);
+        if (fps != null) {
             mPaint.setColor(Color.RED);
             canvas.drawLine(lineStartX, curDrawItem.pos.top, lineStartX, curDrawItem.pos.bottom + methodCutPointSpace, mPaint);
+
+            String showfps = "fps:" + fps + "";
+            mPaint.getTextBounds(showfps, 0, showfps.length(), temp);
+            canvas.drawText(showfps,lineStartX - temp.width(), curDrawItem.pos.bottom - curDrawItem.pos.height() / 2, mPaint);
         }
     }
 
-    private boolean isDrawFps(CallDrawItem cur, CallDrawItem pre) {
+    private String isDrawFps(CallDrawItem cur, CallDrawItem pre) {
         Log.d("fps", "查看这个时间段是否有fps");
         if (cur == null ) {
-            return false;
+            return null;
         }
         //判断是否需要绘制fps
         FpsBean fpsBean = getFps(cur, pre);
         if (fpsBean == null) {
-            return false;
+            return null;
         }
-        return true;
+        return String.valueOf((int)fpsBean.fps);
     }
 
     /**
