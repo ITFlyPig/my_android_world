@@ -33,6 +33,8 @@ public class TestActivity extends AppCompatActivity {
         menuView = findViewById(R.id.v_menu);
         menuView.setFuncs(performanceView.getFuncs());
 
+        test();
+
     }
 
     private void method1() {
@@ -54,48 +56,15 @@ public class TestActivity extends AppCompatActivity {
     }
 
     private void test() {
-        ObjectCache.getInstance();
         User user = new User();
         user.name = "王跃林";
         user.age = 26;
         user.id = 0;
 
-        long sonStart = System.nanoTime();
-        SharedPreferences sharedPreferences = getSharedPreferences("www", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("bb", true);
-        editor.commit();
-        LogUtil.d("wyl", "SP保存Boolean花费时间：" + (System.nanoTime() - sonStart));
+        ObjectCache.getInstance().save("wang", user);
 
-        long fbStart = System.nanoTime();
-        ObjectCache.getInstance().save("bb", true);
-        LogUtil.d("wyl", "File保存Boolean花费时间：" + (System.nanoTime() - fbStart));
-
-
-        long spStart = System.nanoTime();
-        try {
-            for (int i =0; i < 1000; i++) {
-                saveUser(this, "www", "user" + i, user);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        LogUtil.d("wyl", "SP保存User花费时间：" + (System.nanoTime() - spStart));
-
-        long fStart = System.nanoTime();
-        for (int i =0; i < 1000; i++) {
-            ObjectCache.getInstance().save("www" + i, user);
-        }
-
-        LogUtil.d("wyl", "File保存User花费时间：" + (System.nanoTime() - fStart));
-
-        long sprStart = System.nanoTime();
-        LogUtil.d("wyl", "SP读取User花费时间：" + getUser(this, "www", "user") + ":===" + (System.nanoTime() - sprStart));
-
-        long frStart = System.nanoTime();
-        LogUtil.d("wyl", "SP读取User花费时间：" + ObjectCache.getInstance().getObejct("www")+ ":==="  + (System.nanoTime() - frStart));
-
-
+        User u = ObjectCache.getInstance().getObejct("wang");
+        LogUtil.d("wyl", "获取到的缓存的对象：" + u);
 
 
 

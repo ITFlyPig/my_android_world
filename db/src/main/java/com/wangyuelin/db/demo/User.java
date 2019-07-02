@@ -6,6 +6,8 @@ import android.database.Cursor;
 import java.io.Serializable;
 
 public class User implements Serializable {
+
+
     public int id;
     public int age;
     public String name;
@@ -48,5 +50,12 @@ public class User implements Serializable {
         user.age = age;
         user.name = name;
         return user;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("id:").append(id).append("; name:").append(name).append("; age:").append(age);
+        return buffer.toString();
     }
 }

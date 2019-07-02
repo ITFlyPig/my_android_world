@@ -20,6 +20,8 @@ import java.util.HashMap;
  *
  * 效率对比
  * 方案：序列化对象，然后存在SP，效率没有直接写文件高
+ *
+ * 实际测试结果：直接写文件比commit写sp效率高
  */
 public class ObjectCache {
 
@@ -89,7 +91,7 @@ public class ObjectCache {
      * @param <T>
      * @return
      */
-    public <T> T getObejct(String name) {
+    public synchronized  <T> T getObejct(String name) {
         if (TextUtils.isEmpty(name)) {
             return null;
         }
@@ -170,7 +172,7 @@ public class ObjectCache {
      * @param name
      * @param obj
      */
-    public void save(final String name, final Object obj) {
+    public synchronized void save(final String name, final Object obj) {
         if (!check(obj)) {
             return;
         }
@@ -199,7 +201,7 @@ public class ObjectCache {
      * @param name
      * @param obj
      */
-    public void saveAsync(final String name, final Object obj) {
+    public synchronized void saveAsync(final String name, final Object obj) {
         if (!check(obj)) {
             return;
         }
