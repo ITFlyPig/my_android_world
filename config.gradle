@@ -1,0 +1,75 @@
+/**
+ * 这里主要是集中统一管理依赖的版本，避免多个模块引用不同的版本
+ */
+
+ext {
+
+    android = [
+            compileSdkVersion: 28,
+            buildToolsVersion: "26.0.2",
+            minSdkVersion    : 16,
+            targetSdkVersion : 28,
+    ]
+
+    version = [
+            androidSupportSdkVersion: "28.0.0",
+            retrofitSdkVersion      : "2.4.0",
+            dagger2SdkVersion       : "2.19",
+            glideSdkVersion         : "4.8.0",
+            butterknifeSdkVersion   : "8.8.1",
+            rxlifecycleSdkVersion   : "1.0",
+            rxlifecycle2SdkVersion  : "2.2.2",
+            espressoSdkVersion      : "3.0.2",
+            canarySdkVersion        : "1.5.4",
+            supportLibraryVersion   : "26.1.0"
+    ]
+
+    dependencies = [
+            //support
+            "support-annotations"    : "com.android.support:support-annotations:${version["supportLibraryVersion"]}",
+            "appcompat-v7"           : "com.android.support:appcompat-v7:${version["supportLibraryVersion"]}",
+            "design"                 : "com.android.support:design:${version["supportLibraryVersion"]}",
+            "support-v4"             : "com.android.support:support-v4:${version["supportLibraryVersion"]}",
+            "cardview-v7"            : "com.android.support:cardview-v7:${version["supportLibraryVersion"]}",
+            "annotations"            : "com.android.support:support-annotations:${version["supportLibraryVersion"]}",
+            "recyclerview-v7"        : "com.android.support:recyclerview-v7:${version["supportLibraryVersion"]}",
+            "constraint-layout"      : "com.android.support.constraint:constraint-layout:1.0.2",
+            "espresso-core"          : "com.android.support.test.espresso:espresso-core:3.0.2",
+            "runner"                 : "com.android.support.test:runner:1.0.2",
+            "junit"                  : "junit:junit:4.12",
+
+
+            "okhttp"                 : "com.squareup.okhttp3:okhttp:3.9.0",
+            "umeng-common"           : "com.umeng.sdk:common:1.5.3",
+            "eventbus"               : "org.greenrobot:eventbus:3.1.1",
+            "picasso"                : "com.squareup.picasso:picasso:2.5.2",
+            "bugly-crashreport"      : "com.tencent.bugly:crashreport:2.8.6",
+            "bugly-nativecrashreport": "com.tencent.bugly:nativecrashreport:3.6.0",
+            "umeng-analytics"        : "com.umeng.sdk:analytics:7.5.3",
+            "walle-library"          : "com.meituan.android.walle:library:1.1.6",
+            "multidex"               : "com.android.support:multidex:1.0.1",
+            "flowlayout"             : "com.zhy:flowlayout-lib:1.0.3",
+            "switchbutton"           : "ch.ielse:switchbutton:1.0.0",
+            "butterknife"            : "com.jakewharton:butterknife:8.8.1",
+            "android-gif-drawable"   : "pl.droidsonroids.gif:android-gif-drawable:1.2.10",
+            "ijkplayer"              : "tv.danmaku.ijk.media:ijkplayer-java:0.8.8",
+            "okgo"                   : "com.lzy.net:okgo:3.0.4",
+            "okserver"               : "com.lzy.net:okserver:2.0.5",
+            "html-textview"          : "org.sufficientlysecure:html-textview:3.6",
+            "flexbox"                : "com.google.android:flexbox:1.0.0",
+            "soul-permission"        : "com.qw:soulpermission:1.1.8@aar",
+            "fastjson"               : "com.alibaba:fastjson:1.1.71.android",
+            "nv-websocket-client"    : "com.neovisionaries:nv-websocket-client:2.6",
+            "gson"                   : "com.google.code.gson:gson:2.8.5",
+
+            "getui"                  : "com.getui:sdk:2.13.2.0",
+            "getui-oppo"             : "com.assist:oppo:1.0.2",
+            "getui-vivo"             : "com.assist:vivo:1.0.1",
+            "getui-huawei"           : "com.getui:hwp:1.0.5",
+            "getui-meizu"            : "com.getui:mzp:1.0.7",
+            "getui-xiaomi"           : "com.getui:xmp:1.0.4"
+
+    ]
+
+
+}

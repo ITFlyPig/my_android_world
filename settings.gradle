@@ -1,1 +1,1 @@
-include ':app', ':utilmodule', ':uiwidgetmodule', ':download', ':performance', ':common', ':db'
+include ':app', ':utilmodule', ':uiwidgetmodule', ':download', ':performance', ':common', ':db', ':downloader'
