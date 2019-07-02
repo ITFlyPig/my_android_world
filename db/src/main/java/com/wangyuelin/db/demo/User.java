@@ -3,7 +3,9 @@ package com.wangyuelin.db.demo;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     public int id;
     public int age;
     public String name;

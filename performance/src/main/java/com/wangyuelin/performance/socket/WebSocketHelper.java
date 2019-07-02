@@ -36,7 +36,7 @@ public class WebSocketHelper {
         try {
             mWebSocket = new WebSocketFactory()
                     .setConnectionTimeout(3000)
-                    .createSocket("ws://192.168.0.104:8080/websocket/" + sid)
+                    .createSocket("ws://172.16.128.171:8080/websocket/" + sid)
                     .setFrameQueueSize(10)
                     .setMissingCloseFrameAllowed(false)
                     .addListener(webSocketListener)

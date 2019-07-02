@@ -581,3 +581,6 @@ unzipFile         : 解压文件
 unzipFileByKeyword: 解压带有关键字的文件
 getFilesPath      : 获取压缩文件中的文件路径链表
 getComments       : 获取压缩文件中的注释链表
+
+线程池相关（解决一个APP多个线程池问题） -> ThreadHelper.java
+submit:提交任务
