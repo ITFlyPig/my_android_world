@@ -66,6 +66,14 @@ public class DBHelper extends SQLiteOpenHelper {
      * @param db
      * @param oldVersion
      * @param newVersion
+     *
+     * 当用户调用getWritableDatabase或是getReadableDatabase时。
+     * 1. 如果数据库不存在，就会调用onCreat(),不会调用onUpgrade();
+     * 2. 如果数据库存在，但是版本不一样就调用onUpgrade(),不会调用onCreate();
+     * 3. 如果数据库存在，版本一样,不会调用onCreate(), onUpgrade();
+     * 4. 当调用getWritableDatabase，getReadableDatabase如果数据库没有打开，就调用onOpen方法，如果打开了就不调onOPen；
+     * 5. 数据库的表的创建一般都在SQLiteOpenHelper的onCreat()中，表字段升级，都会在onUpgrade()处理；
+     *
      */
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
