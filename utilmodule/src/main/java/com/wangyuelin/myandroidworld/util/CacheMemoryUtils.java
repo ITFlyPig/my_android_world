@@ -1,8 +1,9 @@
 package com.wangyuelin.myandroidworld.util;
 
-import android.support.annotation.NonNull;
-import android.support.v4.util.LruCache;
 
+
+import androidx.annotation.NonNull;
+import androidx.collection.LruCache;
 
 import com.wangyuelin.myandroidworld.util.constant.CacheConstants;
 

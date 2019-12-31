@@ -2,7 +2,8 @@ package com.wangyuelin.myandroidworld.util;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.support.annotation.RequiresPermission;
+
+import androidx.annotation.RequiresPermission;
 
 import static android.Manifest.permission.VIBRATE;
 

@@ -3,9 +3,10 @@ package com.wangyuelin.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.wangyuelin.db.demo.User;
 import com.wangyuelin.myandroidworld.util.LogUtil;

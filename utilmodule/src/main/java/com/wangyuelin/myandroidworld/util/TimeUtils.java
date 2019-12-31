@@ -1,7 +1,7 @@
 package com.wangyuelin.myandroidworld.util;
 
-import android.support.annotation.NonNull;
 
+import androidx.annotation.NonNull;
 
 import com.wangyuelin.myandroidworld.util.constant.TimeConstants;
 
