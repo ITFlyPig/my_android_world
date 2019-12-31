@@ -67,7 +67,12 @@ ext {
             "getui-vivo"             : "com.assist:vivo:1.0.1",
             "getui-huawei"           : "com.getui:hwp:1.0.5",
             "getui-meizu"            : "com.getui:mzp:1.0.7",
-            "getui-xiaomi"           : "com.getui:xmp:1.0.4"
+            "getui-xiaomi"           : "com.getui:xmp:1.0.4",
+
+            "androidx-test-core"     : "androidx.test:core:1.2.0",
+            "robolectric"            : "org.robolectric:robolectric:4.3"
+
+
 
     ]
 

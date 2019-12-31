@@ -27,6 +27,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+
 }
 
 //Aop{
@@ -41,6 +48,11 @@ dependencies {
     implementation rootProject.ext.dependencies["junit"]
     implementation rootProject.ext.dependencies["runner"]
     implementation rootProject.ext.dependencies["espresso-core"]
+
+    testImplementation rootProject.ext.dependencies["androidx-test-core"]
+    testImplementation rootProject.ext.dependencies["robolectric"]
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
+
     implementation project(':utilmodule')
     implementation project(':uiwidgetmodule')
     implementation project(':common')
