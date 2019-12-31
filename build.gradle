@@ -33,3 +33,27 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+subprojects {
+    project.configurations.all {
+        configurations.all {
+            resolutionStrategy {
+                resolutionStrategy.eachDependency { details ->
+                    //解决androidx库的版本不一致的问题
+//                    if (details.requested.group == 'androidx.lifecycle') {
+//                        details.useVersion "2.0.0-rc01"
+//                    }
+//                    if (details.requested.group == 'androidx.versionedparcelable') {
+//                        details.useVersion "1.0.0"
+//                    }
+//                    if (details.requested.group == 'androidx.fragment') {
+//                        details.useVersion "1.0.0"
+//                    }
+//                    if (details.requested.group == 'androidx.appcompat') {
+//                        details.useVersion "1.0.1"
+//                    }
+                }
+            }
+        }
+    }
+}
