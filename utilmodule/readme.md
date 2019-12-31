@@ -584,3 +584,5 @@ getComments       : 获取压缩文件中的注释链表
 
 线程池相关（解决一个APP多个线程池问题） -> ThreadHelper.java
 submit:提交任务
+
+CacheDiskUtils    : 将Bitmap、对象等写到磁盘

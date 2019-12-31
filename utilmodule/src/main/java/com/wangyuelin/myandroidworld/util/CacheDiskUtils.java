@@ -69,9 +69,9 @@ public final class CacheDiskUtils implements CacheConstants {
      *
      * @return the single {@link CacheDiskUtils} instance
      */
-//    public static CacheDiskUtils getInstance() {
-//        return getInstance("wang", DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
-//    }
+    public static CacheDiskUtils getInstance() {
+        return getInstance("", DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
+    }
 
     /**
      * Return the single {@link CacheDiskUtils} instance.
@@ -82,9 +82,9 @@ public final class CacheDiskUtils implements CacheConstants {
      * @param cacheName The name of cache.
      * @return the single {@link CacheDiskUtils} instance
      */
-//    public static CacheDiskUtils getInstance(final String cacheName) {
-//        return getInstance(cacheName, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
-//    }
+    public static CacheDiskUtils getInstance(final String cacheName) {
+        return getInstance(cacheName, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
+    }
 
     /**
      * Return the single {@link CacheDiskUtils} instance.

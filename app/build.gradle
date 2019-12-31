@@ -41,7 +41,6 @@ dependencies {
     implementation rootProject.ext.dependencies["junit"]
     implementation rootProject.ext.dependencies["runner"]
     implementation rootProject.ext.dependencies["espresso-core"]
-
     implementation project(':utilmodule')
     implementation project(':uiwidgetmodule')
     implementation project(':common')
