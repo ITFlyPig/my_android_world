@@ -9,10 +9,12 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/google' }
 
         google()
+        mavenCentral()
         maven {url 'http://storage.googleapis.com/r8-releases/raw'}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
 //        classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:2.0.4'
         
 
